@@ -15,3 +15,7 @@ Each case has the similar directory/file tree shown below.
 | | |--CSP_Z                            [the linked CSP || Z program corresponding to the Circus specification]
 | | | |--BufferSpec2-s1.csp
 | | | |--BufferSpec2-s1.tex
+
+The Circus program can be parsed and typechecked by CZT (http://sourceforge.net/projects/czt/files/czt-ide/). The latest stable release is czt_1_5_0_bin.jar.
+
+The CSP || Z program is model-checked by the modified ProB version under "Tools/ProB" of this repository.
