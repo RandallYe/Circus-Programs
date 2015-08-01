@@ -4,10 +4,10 @@ This is a modified version of ProB and it is based on source code of ProB 1.5.0-
 This version aims for the experiment of model checking and refinement checking for linked CSP || B programs from Circus.
 
 # Prerequisites
-## Linux x86 
-I used Ubuntu 12.04 (32-bit) to build this version and demonstrated the cases
+## Linux x86 or x86_64
+I used Ubuntu 12.04 (32-bit) to build this version and demonstrated the cases. It can also run it on x86_64 but requires some 32-bit libraries under `libs` folder.
 
-## tcl 8.5
+## tcl 8.5 (32-bit)
 ### Check current version
 Use 
 
@@ -19,7 +19,19 @@ to check if we have tcl 8.5 installed. If not, install it.
 ### Installation 
 - Install it by `$ sudo apt-get install tcl8.5` on Ubuntu
 - Alternatively, you can install ActiveTcl 8.5 for Linux.
+- Or just use the pre-installed ActiveTcl-8.5.tar.gz under `libs` folder
 
+#### Ubuntu x86_64
+If your system is x86_64, you need to install tcl 8.5 (32-bit). Better to use the pre-installed ActiveTcl-8.5.tar.gz
+
+- Decompress *ActiveTcl-8.5.tar.gz* to `~/path/to/`
+- Copy other libraries (libgmp.so.10, libXss.so, libXss.so.1, libXss.so.1.0.0) to `~/path/to/libs/` 
+- Export the following environment variables in `StartProB.sh`
+        
+        export PATH=$PATH:~/path/to/ActiveTcl-8.5/bin
+        export LD_LIBRARY_PATH=~/path/to/ActiveTcl-8.5/lib:~/path/to/libs
+        export TCL_LIBRARY=~/path/to/ActiveTcl-8.5/lib/tcl8.5
+ 
 # Run ProB 
 - Decompress *ProB.linux_32.20150721-latest.tar.gz* by `$tar zxvf ProB.linux_32.20150721-latest.tar.gz`
 - Invoke *StartProB.sh* to run ProB by `$./StartProB.sh` 
