@@ -1,0 +1,43 @@
+-- lib_fun.csp
+
+-- function means there's no element which can map to two different values
+fun(X, Y) = { s | s<-rel(X, Y), empty({x1 | (x1,y1)<-s, (x2,y2)<-s, x1 == x2 and y1 != y2})}
+
+-- partial function: not every element in X has the corresponding value in Y
+pfun(X, Y) = { s | s<-rel(X,Y), empty({x1 | (x1,y1)<-s, (x2,y2)<-s, x1 == x2 and y1 != y2})}
+
+-- total function: every element in X has the corresponding value in Y
+-- implementation 1:
+-- tfun(X, Y) = { s | s<-pfun(X, Y), dom(s) == X}
+
+-- implementation 2:
+tfun1(<>, Y) = {}
+--tfun(X, {}) = {}
+tfun1(<x>, Y) = {{(x, y)} | y <- Y}
+tfun1(<x>^s, Y) = { union(sx, ss) | sx <- tfun1(<x>, Y), ss <- tfun1(s, Y)}
+
+tfun(X, Y) = tfun1(seq(X), Y)
+
+-- Partial injections: every value in Y is mapped to up to one element in X
+pifun(X, Y) = { s | s<-pfun(X, Y), empty({x1 | (x1,y1)<-s, (x2,y2)<-s, y1 == y2 and x1 != x2})}
+
+-- Total injections: Partial injections and total function
+tifun(X, Y) = inter(pifun(X, Y), tfun(X, Y))
+
+-- Partial surjections: every value in Y is mapped to at least one element in X
+psfun(X, Y) = { s | s<-pfun(X, Y), ran(s) == Y}
+
+-- Total surjections: Partial surjections and total function
+tsfun(X, Y) = inter(psfun(X, Y), tfun(X, Y))
+
+-- Bijections: total surjections and total injections
+bjfun(X, Y) = inter(tsfun(X, Y), tifun(X, Y))
+
+-- function application: f(x)
+-- fa(f, x)
+-- fa(f)(x) is not supported in ProB
+fa(f, a) = 
+    let
+        pick({x}) = x
+        y = pick({yy | (x, yy)<-f, x == a})
+    within y
