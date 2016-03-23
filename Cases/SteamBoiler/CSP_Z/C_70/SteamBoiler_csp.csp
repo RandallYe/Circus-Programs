@@ -51,11 +51,10 @@ datatype InputSignal = stop | steamBoilerWaiting | physicalUnitsReady | transmis
 datatype PState = popen | pwaiting | pclosed | pfailed
 datatype PCState = pcflow | pcnoflow | pcfailed
 datatype UnitFailure = qfail | vfail | pfail.PumpIndex | pcfail.PumpIndex
-datatype VStateAct = openv | closev | VNoChange
+datatype VAction = openv | closev | VNoChange
 datatype SState = sokay | sfailed
 datatype Mode = initialisation | normal | degraded | rescue | emergencyStop
 datatype OutputSignal = programReady | openValve | closeValve | levelFailureDetection | steamFailureDetection | levelRepairedAcknowledgement | steamRepairedAcknowledgement
-datatype VState = vopen | vclosed
 datatype Analyser_PumpCtr_rec_field = Analyser_PumpCtr_rec_pa_1.{0, P} | Analyser_PumpCtr_rec_pa_2.{0, P} | Analyser_PumpCtr_rec_pcst.PCState | Analyser_PumpCtr_rec_pst.PState
 
 select_field_Analyser_PumpCtr((Analyser_PumpCtr_rec_pa_1.x, _, _, _), Analyser_PumpCtr_rec_pa_1) = x
@@ -66,8 +65,9 @@ select_field_Analyser_PumpCtr((_, _, _, Analyser_PumpCtr_rec_pst.x), Analyser_Pu
 -- channel declarations
 channel div
 channel clocktick,startcycle
-channel Timer_InitTimer
-channel Timer_AssgnOp1
+channel Timer_InitTimer-- 
+channel Timer_InitTimer_fOp -- 
+channel Timer_AssgnOp1-- 
 channel levelbelowmin,levelabovemax
 channel emergencystop,cfailures,levelokay,nonqfailure : Bool
 channel physicalunitsready,qfailure,sbwaiting,vzero : Bool
@@ -80,32 +80,34 @@ channel input6 : Set(UnitFailure)
 channel input7 : Set(UnitFailure)
 channel startexec
 channel failuresrepairs : Set(UnitFailure).Set(UnitFailure)
-channel pumps : tfun(PumpIndex, InputPState).VStateAct
-channel Analyser_InitAnalyserState
-channel Analyser_HandleRepair: Set(UnitFailure).Set(UnitFailure)
-channel Analyser_HandleRepair_fOp: Set(UnitFailure).Set(UnitFailure)
-channel SchExpr_2: tfun(PumpIndex, InputPCState).tfun(PumpIndex, InputPState)
-channel SchExpr_2_fOp: tfun(PumpIndex, InputPCState).tfun(PumpIndex, InputPState)
-channel Analyser_Analyse: Set(UnitFailure).tfun(PumpIndex, InputPCState).tfun(PumpIndex, InputPState).NUMS.Set(UnitFailure).Set(InputSignal).NUMS
-channel Analyser_Analyse_fOp: Set(UnitFailure).tfun(PumpIndex, InputPCState).tfun(PumpIndex, InputPState).NUMS.Set(UnitFailure).Set(InputSignal).NUMS
-channel Analyser_SetExpectedPumpState: tfun(PumpIndex, InputPState).VStateAct
-channel Analyser_SetExpectedPumpState_fOp: tfun(PumpIndex, InputPState).VStateAct
+channel pumps : tfun(PumpIndex, InputPState).VAction
+channel Analyser_InitAnalyserState-- 
+channel Analyser_InitAnalyserState_fOp -- 
+channel Analyser_HandleRepair: Set(UnitFailure).Set(UnitFailure)-- !failureacks!repairs
+channel Analyser_HandleRepair_fOp: Set(UnitFailure).Set(UnitFailure) -- !failureacks!repairs
+channel Analyser_SetPumpCtr: tfun(PumpIndex, InputPCState).tfun(PumpIndex, InputPState)-- !pumpCtrState!pumpState
+channel Analyser_SetPumpCtr_fOp: tfun(PumpIndex, InputPCState).tfun(PumpIndex, InputPState) -- !pumpCtrState!pumpState
+channel Analyser_Analyse: Set(UnitFailure).tfun(PumpIndex, InputPCState).tfun(PumpIndex, InputPState).NUMS.Set(UnitFailure).Set(InputSignal).NUMS-- !failureacks!pumpCtrState!pumpState!q!repairs!signals!v
+channel Analyser_Analyse_fOp: Set(UnitFailure).tfun(PumpIndex, InputPCState).tfun(PumpIndex, InputPState).NUMS.Set(UnitFailure).Set(InputSignal).NUMS -- !failureacks!pumpCtrState!pumpState!q!repairs!signals!v
+channel Analyser_SetExpectedPumpState: tfun(PumpIndex, InputPState).VAction-- !pumpstate!vstate
+channel Analyser_SetExpectedPumpState_fOp: tfun(PumpIndex, InputPState).VAction -- !pumpstate!vstate
 channel startpumps,stoppumps,openvalve,closevalve,sendprogready
 channel reportmode : Mode
 channel startreport,endreport
-channel Controller_InitController
-channel Controller_AssgnOp3
-channel Controller_AssgnOp4
-channel Controller_AssgnOp5
-channel Controller_AssgnOp6
-channel Controller_AssgnOp7
-channel Controller_AssgnOp8
-channel Controller_AssgnOp9
-channel Controller_AssgnOp10
-channel Controller_AssgnOp11
-channel Controller_AssgnOp12
-channel Controller_AssgnOp13
-channel Controller_AssgnOp14
+channel Controller_InitController-- 
+channel Controller_InitController_fOp -- 
+channel Controller_AssgnOp5-- 
+channel Controller_AssgnOp6-- 
+channel Controller_AssgnOp7-- 
+channel Controller_AssgnOp8-- 
+channel Controller_AssgnOp9-- 
+channel Controller_AssgnOp10-- 
+channel Controller_AssgnOp11-- 
+channel Controller_AssgnOp12-- 
+channel Controller_AssgnOp13-- 
+channel Controller_AssgnOp14-- 
+channel Controller_AssgnOp15-- 
+channel Controller_AssgnOp16-- 
 channel output1 : Mode
 channel output2 : Set(OutputSignal)
 channel output3 : tfun(PumpIndex, InputPState)
@@ -113,54 +115,40 @@ channel output4 : Set(UnitFailure)
 channel output5 : Set(UnitFailure)
 channel output6 : Set(UnitFailure)
 channel output7 : Set(UnitFailure)
-channel Reporter_InitReporter
-channel Reporter_AssgnOp15: Nonemergency
-channel Reporter_AssgnOp16
-channel Reporter_AssgnOp17
-channel Reporter_AssgnOp18
-channel Reporter_AssgnOp19
-channel Reporter_AssgnOp20
-channel Reporter_AssgnOp21
-channel Reporter_FailuresRepairs: Set(UnitFailure).Set(UnitFailure)
-channel Reporter_FailuresRepairs_fOp: Set(UnitFailure).Set(UnitFailure)
+channel Reporter_InitReporter-- 
+channel Reporter_InitReporter_fOp -- 
+channel Reporter_AssgnOp17: Nonemergency-- !m
+channel Reporter_AssgnOp18-- 
+channel Reporter_AssgnOp19-- 
+channel Reporter_AssgnOp20-- 
+channel Reporter_AssgnOp21-- 
+channel Reporter_AssgnOp22-- 
+channel Reporter_AssgnOp23-- 
+channel Reporter_FailuresRepairs: Set(UnitFailure).Set(UnitFailure)-- !noacks!repairs
+channel Reporter_FailuresRepairs_fOp: Set(UnitFailure).Set(UnitFailure) -- !noacks!repairs
 channel Timer_OP_time : Timer_Time
-channel Analyser_OP_stops : NUMS
-channel Analyser_OP_qa_1 : NUMS
-channel Analyser_OP_qc_1 : NUMS
-channel Analyser_OP_vc_2 : NUMS
-channel Analyser_OP_vc_1 : NUMS
-channel Analyser_OP_va_2 : NUMS
-channel Analyser_OP_expectedp : tfun(PumpIndex, InputPState)
-channel Analyser_OP_failures : Set(UnitFailure)
-channel Analyser_OP_pumpState : tfun(PumpIndex, InputPState)
-channel Analyser_OP_signalhistory : Set(InputSignal)
-channel Analyser_OP_pta_2 : {0, P, (2 * P), (3 * P), (4 * P)}
-channel Analyser_OP_qst : SState
-channel Analyser_OP_va_1 : NUMS
-channel Analyser_OP_valve : VState
-channel Analyser_OP_pumpCtrState : tfun(PumpIndex, InputPCState)
-channel Analyser_OP_failureacks : Set(UnitFailure)
-channel Analyser_OP_pumpctr : tfun(PumpIndex, Analyser_PumpCtr)
-channel Analyser_OP_q : NUMS
-channel Analyser_OP_qa_2 : NUMS
-channel Analyser_OP_noacks : Set(UnitFailure)
-channel Analyser_OP_emergencyCond : {0, 1}
-channel Analyser_OP_v : NUMS
-channel Analyser_OP_expectedpc : tfun(PumpIndex, InputPCState)
 channel Analyser_OP_signals : Set(InputSignal)
+channel Analyser_OP_qa_1 : NUMS
+channel Analyser_OP_qa_2 : NUMS
+channel Analyser_OP_emergencyCond : {0, 1}
+channel Analyser_OP_stops : NUMS
+channel Analyser_OP_signalhistory : Set(InputSignal)
+channel Analyser_OP_va_2 : NUMS
+channel Analyser_OP_va_1 : NUMS
+channel Analyser_OP_qst : SState
 channel Analyser_OP_vst : SState
-channel Analyser_OP_pta_1 : {0, P, (2 * P), (3 * P), (4 * P)}
-channel Analyser_OP_qc_2 : NUMS
+channel Analyser_OP_pumpctr : tfun(PumpIndex, Analyser_PumpCtr)
 channel Analyser_OP_repairs : Set(UnitFailure)
+channel Analyser_OP_noacks : Set(UnitFailure)
 channel Controller_OP_mode : Mode
-channel Reporter_OP_pumpCtrRepairedAcknowledgement : Set(UnitFailure)
+channel Reporter_OP_mode : Mode
+channel Reporter_OP_signals : Set(OutputSignal)
 channel Reporter_OP_pumpState : tfun(PumpIndex, InputPState)
+channel Reporter_OP_pumpFailureDetection : Set(UnitFailure)
 channel Reporter_OP_pumpCtrFailureDetection : Set(UnitFailure)
 channel Reporter_OP_pumpRepairedAcknowledgement : Set(UnitFailure)
-channel Reporter_OP_mode : Mode
-channel Reporter_OP_pumpFailureDetection : Set(UnitFailure)
-channel Reporter_OP_valveSt : VStateAct
-channel Reporter_OP_signals : Set(OutputSignal)
+channel Reporter_OP_pumpCtrRepairedAcknowledgement : Set(UnitFailure)
+channel Reporter_OP_valveSt : VAction
 
 -- channel set declarations
 Information = {| emergencystop, cfailures, levelabovemax, levelbelowmin, levelokay, nonqfailure, physicalunitsready, qfailure, sbwaiting, vzero |}
@@ -170,7 +158,7 @@ TAControllerInterface = union({| startexec |}, Information)
 TACReporterInterface = {| startpumps, stoppumps, openvalve, closevalve, sendprogready, startreport, reportmode, endreport, failuresrepairs, pumps |}
 
 -- hidden event
-HIDE_CSPB = {|Timer_OP_time, Analyser_OP_stops, Analyser_OP_qa_1, Analyser_OP_qc_1, Analyser_OP_vc_2, Analyser_OP_vc_1, Analyser_OP_va_2, Analyser_OP_expectedp, Analyser_OP_failures, Analyser_OP_pumpState, Analyser_OP_signalhistory, Analyser_OP_pta_2, Analyser_OP_qst, Analyser_OP_va_1, Analyser_OP_valve, Analyser_OP_pumpCtrState, Analyser_OP_failureacks, Analyser_OP_pumpctr, Analyser_OP_q, Analyser_OP_qa_2, Analyser_OP_noacks, Analyser_OP_emergencyCond, Analyser_OP_v, Analyser_OP_expectedpc, Analyser_OP_signals, Analyser_OP_vst, Analyser_OP_pta_1, Analyser_OP_qc_2, Analyser_OP_repairs, Controller_OP_mode, Reporter_OP_pumpCtrRepairedAcknowledgement, Reporter_OP_pumpState, Reporter_OP_pumpCtrFailureDetection, Reporter_OP_pumpRepairedAcknowledgement, Reporter_OP_mode, Reporter_OP_pumpFailureDetection, Reporter_OP_valveSt, Reporter_OP_signals, Timer_InitTimer, Timer_AssgnOp1, Analyser_InitAnalyserState, Analyser_HandleRepair, Analyser_HandleRepair_fOp, SchExpr_2, SchExpr_2_fOp, Analyser_Analyse, Analyser_Analyse_fOp, Analyser_SetExpectedPumpState, Analyser_SetExpectedPumpState_fOp, Controller_InitController, Controller_AssgnOp3, Controller_AssgnOp4, Controller_AssgnOp5, Controller_AssgnOp6, Controller_AssgnOp7, Controller_AssgnOp8, Controller_AssgnOp9, Controller_AssgnOp10, Controller_AssgnOp11, Controller_AssgnOp12, Controller_AssgnOp13, Controller_AssgnOp14, Reporter_InitReporter, Reporter_AssgnOp15, Reporter_AssgnOp16, Reporter_AssgnOp17, Reporter_AssgnOp18, Reporter_AssgnOp19, Reporter_AssgnOp20, Reporter_AssgnOp21, Reporter_FailuresRepairs, Reporter_FailuresRepairs_fOp|}
+HIDE_CSPB = {|Timer_OP_time, Analyser_OP_signals, Analyser_OP_qa_1, Analyser_OP_qa_2, Analyser_OP_emergencyCond, Analyser_OP_stops, Analyser_OP_signalhistory, Analyser_OP_va_2, Analyser_OP_va_1, Analyser_OP_qst, Analyser_OP_vst, Analyser_OP_pumpctr, Analyser_OP_repairs, Analyser_OP_noacks, Controller_OP_mode, Reporter_OP_mode, Reporter_OP_signals, Reporter_OP_pumpState, Reporter_OP_pumpFailureDetection, Reporter_OP_pumpCtrFailureDetection, Reporter_OP_pumpRepairedAcknowledgement, Reporter_OP_pumpCtrRepairedAcknowledgement, Reporter_OP_valveSt, Timer_InitTimer, Timer_InitTimer_fOp, Timer_AssgnOp1, Analyser_InitAnalyserState, Analyser_InitAnalyserState_fOp, Analyser_HandleRepair, Analyser_HandleRepair_fOp, Analyser_SetPumpCtr, Analyser_SetPumpCtr_fOp, Analyser_Analyse, Analyser_Analyse_fOp, Analyser_SetExpectedPumpState, Analyser_SetExpectedPumpState_fOp, Controller_InitController, Controller_InitController_fOp, Controller_AssgnOp5, Controller_AssgnOp6, Controller_AssgnOp7, Controller_AssgnOp8, Controller_AssgnOp9, Controller_AssgnOp10, Controller_AssgnOp11, Controller_AssgnOp12, Controller_AssgnOp13, Controller_AssgnOp14, Controller_AssgnOp15, Controller_AssgnOp16, Reporter_InitReporter, Reporter_InitReporter_fOp, Reporter_AssgnOp17, Reporter_AssgnOp18, Reporter_AssgnOp19, Reporter_AssgnOp20, Reporter_AssgnOp21, Reporter_AssgnOp22, Reporter_AssgnOp23, Reporter_FailuresRepairs, Reporter_FailuresRepairs_fOp|}
 
 -- processes for variable storing and retrieving 
 
@@ -180,7 +168,10 @@ DIV = div -> STOP
 
 
 Timer = 
-   ((Timer_InitTimer ->  SKIP) ; 
+   (
+  (   Timer_InitTimer ->  SKIP
+   [] Timer_InitTimer_fOp -> DIV
+  ) ; 
   let Timer_TCycle = 
      ( ((Timer_AssgnOp1 ->  SKIP) ; Timer_OP_time?time -> 
     (   (((not (time == 0)) and (not ((time != 0)))) & DIV)
@@ -198,20 +189,23 @@ Timer =
   within Timer_TCycle) 
 
 Analyser = 
-   ((Analyser_InitAnalyserState ->  SKIP) ; 
+   (
+  (   Analyser_InitAnalyserState ->  SKIP
+   [] Analyser_InitAnalyserState_fOp -> DIV
+  ) ; 
   let Analyser_AnalyserCycle = 
     startcycle -> input1?signals -> input2?pumpState -> input3?pumpCtrState -> input4?q -> input5?v -> input6?failureacks -> input7?repairs ->  ( ( (
     (   Analyser_HandleRepair!failureacks!repairs ->  SKIP
      [] Analyser_HandleRepair_fOp!failureacks!repairs -> DIV
     ) ; 
-    (   SchExpr_2!pumpCtrState!pumpState ->  SKIP
-     [] SchExpr_2_fOp!pumpCtrState!pumpState -> DIV
+    (   Analyser_SetPumpCtr!pumpCtrState!pumpState ->  SKIP
+     [] Analyser_SetPumpCtr_fOp!pumpCtrState!pumpState -> DIV
     ))  ; 
     (   Analyser_Analyse!failureacks!pumpCtrState!pumpState!q!repairs!signals!v ->  SKIP
      [] Analyser_Analyse_fOp!failureacks!pumpCtrState!pumpState!q!repairs!signals!v -> DIV
     ))  ; startexec -> 
     let Analyser_InfoService = 
-      Analyser_OP_va_2?va_2 -> Analyser_OP_vst?vst -> Analyser_OP_emergencyCond?emergencyCond -> Analyser_OP_va_1?va_1 -> Analyser_OP_stops?stops -> Analyser_OP_noacks?noacks -> Analyser_OP_signals?signals -> Analyser_OP_repairs?repairs -> Analyser_OP_qa_2?qa_2 -> Analyser_OP_signalhistory?signalhistory -> Analyser_OP_pumpctr?pumpctr -> Analyser_OP_qst?qst -> Analyser_OP_qa_1?qa_1 -> 
+      Analyser_OP_qa_2?qa_2 -> Analyser_OP_pumpctr?pumpctr -> Analyser_OP_qst?qst -> Analyser_OP_emergencyCond?emergencyCond -> Analyser_OP_va_1?va_1 -> Analyser_OP_va_2?va_2 -> Analyser_OP_repairs?repairs -> Analyser_OP_noacks?noacks -> Analyser_OP_stops?stops -> Analyser_OP_qa_1?qa_1 -> Analyser_OP_vst?vst -> Analyser_OP_signalhistory?signalhistory -> Analyser_OP_signals?signals -> 
       (    (
         (   
           (   
@@ -251,10 +245,13 @@ Analyser =
 TAnalyser = Timer [| TAnalyserInterface |] Analyser \ TAnalyserInterface
 
 Controller = 
-   ((Controller_InitController ->  SKIP) ; 
+   (
+  (   Controller_InitController ->  SKIP
+   [] Controller_InitController_fOp -> DIV
+  ) ; 
   let Controller_ControllerCycle = 
      ( (startexec -> startreport -> 
-    (   emergencystop.(true) -> reportmode.(emergencyStop) -> (Controller_AssgnOp3 ->  SKIP)
+    (   emergencystop.(true) -> reportmode.(emergencyStop) -> (Controller_AssgnOp5 ->  SKIP)
      [] emergencystop.(false) -> Controller_OP_mode?mode -> 
       (   
         (   
@@ -265,43 +262,43 @@ Controller =
                   (   qfailure.(false) -> 
                     (   physicalunitsready.(true) -> 
                       (   levelokay.(true) -> 
-                        (   cfailures.(false) -> reportmode.(normal) -> (Controller_AssgnOp4 ->  SKIP)
-                         [] cfailures.(true) -> reportmode.(degraded) -> (Controller_AssgnOp5 ->  SKIP)
+                        (   cfailures.(false) -> reportmode.(normal) -> (Controller_AssgnOp6 ->  SKIP)
+                         [] cfailures.(true) -> reportmode.(degraded) -> (Controller_AssgnOp7 ->  SKIP)
                         )
-                       [] levelokay.(false) -> reportmode.(emergencyStop) -> (Controller_AssgnOp6 ->  SKIP)
+                       [] levelokay.(false) -> reportmode.(emergencyStop) -> (Controller_AssgnOp8 ->  SKIP)
                       )
                      [] physicalunitsready.(false) -> 
                       (   levelokay.(true) -> sendprogready -> SKIP
                        [] levelokay.(false) -> SKIP
                       )
                     )
-                   [] qfailure.(true) -> reportmode.(emergencyStop) -> (Controller_AssgnOp7 ->  SKIP)
+                   [] qfailure.(true) -> reportmode.(emergencyStop) -> (Controller_AssgnOp9 ->  SKIP)
                   )
-                 [] vzero.(false) -> reportmode.(emergencyStop) -> (Controller_AssgnOp8 ->  SKIP)
+                 [] vzero.(false) -> reportmode.(emergencyStop) -> (Controller_AssgnOp10 ->  SKIP)
                 )
                [] sbwaiting.(false) -> SKIP
               ))
              [] (mode == normal & 
               (   
                 (   cfailures.(false) -> SKIP
-                 [] qfailure.(true) -> reportmode.(rescue) -> (Controller_AssgnOp9 ->  SKIP)
+                 [] qfailure.(true) -> reportmode.(rescue) -> (Controller_AssgnOp11 ->  SKIP)
                 )
-               [] nonqfailure.(true) -> reportmode.(degraded) -> (Controller_AssgnOp10 ->  SKIP)
+               [] nonqfailure.(true) -> reportmode.(degraded) -> (Controller_AssgnOp12 ->  SKIP)
               ))
             )
            [] (mode == degraded & 
             (   qfailure.(false) -> 
               (   cfailures.(true) -> SKIP
-               [] cfailures.(false) -> reportmode.(normal) -> (Controller_AssgnOp11 ->  SKIP)
+               [] cfailures.(false) -> reportmode.(normal) -> (Controller_AssgnOp13 ->  SKIP)
               )
-             [] qfailure.(true) -> reportmode.(rescue) -> (Controller_AssgnOp12 ->  SKIP)
+             [] qfailure.(true) -> reportmode.(rescue) -> (Controller_AssgnOp14 ->  SKIP)
             ))
           )
          [] (mode == rescue & 
           (   qfailure.(true) -> SKIP
            [] qfailure.(false) -> 
-            (   cfailures.(false) -> reportmode.(normal) -> (Controller_AssgnOp13 ->  SKIP)
-             [] cfailures.(true) -> reportmode.(degraded) -> (Controller_AssgnOp14 ->  SKIP)
+            (   cfailures.(false) -> reportmode.(normal) -> (Controller_AssgnOp15 ->  SKIP)
+             [] cfailures.(true) -> reportmode.(degraded) -> (Controller_AssgnOp16 ->  SKIP)
             )
           ))
         )
@@ -359,7 +356,10 @@ TAController = TAnalyser [| TAControllerInterface |] Controller \ TAControllerIn
 
 Reporter = 
   let X = 
-     ( (startreport -> (Reporter_InitReporter ->  SKIP) ; 
+     ( (startreport -> 
+    (   Reporter_InitReporter ->  SKIP
+     [] Reporter_InitReporter_fOp -> DIV
+    ) ; 
     let Reporter_ReportService = 
       (   
         (    (( [] m:Nonemergency @ 
@@ -367,18 +367,18 @@ Reporter =
             (   
               (   
                 (   
-                  (   reportmode.(m) -> (Reporter_AssgnOp15!m ->  SKIP)
-                   [] sendprogready -> (Reporter_AssgnOp16 ->  SKIP)
+                  (   reportmode.(m) -> (Reporter_AssgnOp17!m ->  SKIP)
+                   [] sendprogready -> (Reporter_AssgnOp18 ->  SKIP)
                   )
-                 [] startpumps -> (Reporter_AssgnOp17 ->  SKIP)
+                 [] startpumps -> (Reporter_AssgnOp19 ->  SKIP)
                 )
-               [] stoppumps -> (Reporter_AssgnOp18 ->  SKIP)
+               [] stoppumps -> (Reporter_AssgnOp20 ->  SKIP)
               )
-             [] openvalve -> (Reporter_AssgnOp19 ->  SKIP)
+             [] openvalve -> (Reporter_AssgnOp21 ->  SKIP)
             )
-           [] closevalve -> (Reporter_AssgnOp20 ->  SKIP)
+           [] closevalve -> (Reporter_AssgnOp22 ->  SKIP)
           )) ; Reporter_ReportService) 
-         []  (reportmode.(emergencyStop) -> (Reporter_AssgnOp21 ->  SKIP) ;  (endreport -> failuresrepairs?noacks?repairs -> 
+         []  (reportmode.(emergencyStop) -> (Reporter_AssgnOp23 ->  SKIP) ;  (endreport -> failuresrepairs?noacks?repairs -> 
           (   Reporter_FailuresRepairs!noacks!repairs ->  SKIP
            [] Reporter_FailuresRepairs_fOp!noacks!repairs -> DIV
           ) ; Reporter_OP_mode?mode -> output1.(mode) -> Reporter_OP_signals?signals -> output2.(signals) -> Reporter_OP_pumpState?pumpState -> output3.(pumpState) -> Reporter_OP_pumpFailureDetection?pumpFailureDetection -> output4.(pumpFailureDetection) -> Reporter_OP_pumpCtrFailureDetection?pumpCtrFailureDetection -> output5.(pumpCtrFailureDetection) -> Reporter_OP_pumpRepairedAcknowledgement?pumpRepairedAcknowledgement -> output6.(pumpRepairedAcknowledgement) -> Reporter_OP_pumpCtrRepairedAcknowledgement?pumpCtrRepairedAcknowledgement -> output7.(pumpCtrRepairedAcknowledgement) -> Reporter_OP_valveSt?valveSt -> Reporter_OP_pumpState?pumpState -> pumps.(pumpState).(valveSt) -> SKIP) ) 
