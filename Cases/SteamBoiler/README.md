@@ -8,4 +8,4 @@ This is a case study of the steam boiler solution in Circus, and it is originall
     + Jim Woodcock's original report
     + Leonardo Freitas's parsable version ([online][leo])
 
-[leo]: "http://www.academia.edu/3972237/Circus_Example_Parsable_Steam_Boiler_unboxed_processes_"
+[leo]: http://www.academia.edu/3972237/Circus_Example_Parsable_Steam_Boiler_unboxed_processes_ "Leo's Parsable Version"
