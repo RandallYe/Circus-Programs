@@ -1,88 +1,12 @@
 \begin{zsection}
-	\SECTION\ ESELSystem1 \parents\ circus\_toolkit
+	\SECTION\ ESELSystem1 \parents\ ESELHeader 
 \end{zsection}
-
-%A set of all product identities and a set of all ESEL identities are defined as given sets $PID$ and $ESID$ respectively. 
-First of all, two constants are defined. 
-\begin{axdef}
-    MAX\_ESEL: \nat; MAX\_PID: \nat
-\end{axdef}
-
-Each ESEL has one uniquely identified display and they are given a same ID. Thus from now on, an ESEL ID means the identity of its display as well as the identity of this ESEL which consists of a ESEL controller and a display gother.
-\begin{zed}
-    ESID ::= ES \ldata 1 \upto MAX\_ESEL \rdata \\
-    PID ::= PD \ldata 1 \upto MAX\_PID \rdata
-\end{zed}
-%\begin{zed}
-%    [PID, ESID]
-%\end{zed}
-
-\begin{zed}
-    Price == \nat
-\end{zed}
-
-\begin{zed}
-    UStatus ::= uok | ufail
-\end{zed}
-
-\begin{zed}
-    % NA - no correponding ESEL ID for the product
-    FStatus ::= fail \ldata ESID \rdata | NA 
-\end{zed}
-
-\begin{circus}
-	\circchannel\ updateallmap: ESID \pfun PID \\
-	\circchannel\ updatemap: ESID \pfun PID
-\end{circus}
-
-\begin{circus}
-	\circchannel\ updateallprice: PID \pfun Price \\
-	\circchannel\ updateprice: PID \pfun Price
-\end{circus}
-
-\begin{circus}
-	\circchannel\ update
-\end{circus}
-
-\begin{circus}
-	%\circchannel\ failures: PID \pfun FStatus \\
-	\circchannel\ failures: PID \pfun \power~FStatus \\
-\end{circus}
-
-\begin{circus}
-    % inside
-	\circchannel\ resp: PID \cross FStatus \\
-    \circchannel\ terminate \\
-    \circchannelset\ RespInterface == \lchanset resp, terminate \rchanset 
-\end{circus}
-
-This $uupdate$ event is to update one ESEL to the specific price, and $ures$ for update response from this ESEL.
-\begin{circus}
-    % unit
-	\circchannel\ uupdate: ESID \cross Price \\
-	\circchannel\ ures: ESID \cross UStatus
-\end{circus}
-
-The $finishdisplay$ event is used to wait for display completion of all ESELs.
-\begin{circus}
-	\circchannel\ init \\
-	\circchannel\ display \\
-	\circchannel\ finishdisplay
-\end{circus}
-
-These channels are for communication between ESEL controllers to their linked displays. The $write$ event writes price to its display, and the $read$ event reads price from its display. $ondisplay$ turns on the related display and $offdisplay$ terns off it.
-\begin{circus}
-	\circchannel\ write: ESID \cross Price \\
-	\circchannel\ read: ESID \cross Price \\
-	\circchannel\ ondisplay: ESID \\
-	\circchannel\ offdisplay: ESID 
-\end{circus}
 
 \paragraph{Controller Process}
 The process for overall control of the system, named $Controller$, is defined as an explicitly defined process.
 
 \begin{circus}
-	\circprocess\ Controller \circdef \circbegin \\
+	\circprocess\ Controller1 \circdef \circbegin \\
 \end{circus}
 
 $Controller$ has three state components: $pumap$ for mapping from ESELs to products, $ppmap$ for mapping from products to their price, and $response$ for the response of one update to the environment.
@@ -193,7 +117,7 @@ The overall behaviour of the $Controller$ process is given by its main action. I
 \paragraph{ESEL Process}
 Each ESEL is defined as a parameterised process with the formal parameter---ESEL ID.
 \begin{circus}
-	\circprocess\ ESEL \circdef eid:ESID \circspot \circbegin \\
+	\circprocess\ ESEL1 \circdef eid:ESID \circspot \circbegin \\
 \end{circus}
 
 The process has two state components: $price$ for the price to display, and $status$ for the status of ESEL.
@@ -235,74 +159,14 @@ The overall behaviour of the process is given by its main action. It specifies t
 
 The behaviour of all ESELs together is formed by iterated parallel composition of $ESEL$ process. The only communication between them is to display at the same time.
 \begin{circus}
-    \circchannelset\ InterESELInterface == \lchanset init, display, finishdisplay \rchanset \\
-    \circprocess\ ESELS \circdef \Parallel eid: ESID \lpar InterESELInterface \rpar \circspot ESEL(eid)
+    \circchannelset\ InterESELInterface1 == \lchanset init, display, finishdisplay \rchanset \\
+    \circprocess\ ESELS1 \circdef \Parallel eid: ESID \lpar InterESELInterface1 \rpar \circspot ESEL1(eid)
 \end{circus}
 
 \paragraph{System}
 Finally, the whole system is defined as the parallel between the $Controller$ process and the $ESELS$ process. They synchronise with the $uupdate$, $ures$, $display$, and $finishdisplay$ events.
 \begin{circus}
-    \circchannelset\ ESELInterface == \lchanset uupdate, ures, init, display, finishdisplay \rchanset \\
-    \circprocess\ ESELSystem1 \circdef (Controller \lpar ESELInterface \rpar ESELS) \circhide ESELInterface
+    \circchannelset\ ESELInterface1 == \lchanset uupdate, ures, init, display, finishdisplay \rchanset \\
+    \circprocess\ ESELSystem1 \circdef (Controller1 \lpar ESELInterface1 \rpar ESELS1) \circhide ESELInterface1
 \end{circus}
 
-%\paragraph{Single Environment}
-%\begin{circus}
-%	\circprocess\ Controller \circdef \circbegin \\
-%%\end{circus}
-%%\begin{circusaction}
-%    	\t1 \circstate\ State == [~ pumap: ESID \pfun PID; ppmap: PID \pfun Price; \\
-%            \t2 response: PID \pfun FStatus ~] \\
-%%\end{circusaction}
-%    	\t1	Init == [~ (State)' | pumap' = \emptyset \land ppmap' = \emptyset \land response' = \emptyset ~] \\
-%        \t1 UpdateMap == [~ \Delta State; map?: ESID \pfun PID | \\
-%            \t2 pumap' = pumap \oplus map? \land ppmap' = ppmap \land response' = response ~] \\
-%        \t1 UpdateAllMap == [~ \Delta State; map?: ESID \pfun PID | \\
-%            \t2 pumap' = map? \land ppmap' = ppmap \land response' = response ~] \\
-%        \t1 NewPrice == [~ \Delta State; price?: PID \pfun Price | \\
-%            \t2 ppmap' = ppmap \oplus price? \land pumap' = pumap \land response' = response ~] \\
-%        \t1 AllNewPrice == [~ \Delta State; price?: PID \pfun Price | \\
-%            \t2 ppmap' = price? \land pumap' = pumap \land response' = response ~] \\
-%        \t1 AUpdatemap \circdef updatemap?map \then \lschexpract UpdateMap \rschexpract \\
-%            \t2 \extchoice updateallmap?map \then \lschexpract UpdateAllMap \rschexpract \\
-%        \t1 ANewPrice \circdef updateprice?price \then \lschexpract NewPrice \rschexpract \\
-%            \t2 \extchoice updateallprice?price \then \lschexpract AllNewPrice \rschexpract \\
-%        %
-%        \t1 AUpdateUnitPrice \circdef uid:ESID; pid:PID \circspot \\
-%            \t2 uupdate.uid.(ppmap~pid) \then ures.uid?rst \then \\
-%            \t2 (\lcircguard rst = ufail \rcircguard \circguard resp.pid.(fail~uid) \then \Skip \\
-%            \t2 \extchoice \lcircguard rst = uok \rcircguard \circguard \Skip)\\
-%%        %
-%        \t1 AUpdateProductUnits \circdef pid:PID \circspot \\
-%            \t2 (\Interleave uid: (\dom~(pumap \rres \{pid\})) \circspot AUpdateUnitPrice(uid, pid)) \\
-%        \t1 AUpdateNoUnit \circdef  pid:PID \circspot resp.pid.NA \then \Skip \\ 
-%        \t1 AUpdateProduct \circdef pid:PID \circspot \\
-%            \t2 \,\,\,\, \lcircguard pid \in \ran~pumap \rcircguard \circguard AUpdateProductUnits(pid) \\
-%            \t2 \extchoice \lcircguard pid \notin \ran~pumap \rcircguard \circguard AUpdateNoUnit(pid) \\
-%        \t1 CollectResp \circdef \circmu X \circspot \\
-%            \t2 (resp?pid?fst \then response := response \oplus \{pid \mapsto fst \} \circseq X) \\
-%            \t2 \extchoice terminate \then \Skip \\
-%        \t1 AUpdateResp \circdef (\\
-%            \t2 ((\Interleave pid: (\dom~ppmap) \linter \emptyset \rinter \circspot AUpdateProduct(pid)) \\
-%                \t3 \circseq terminate \then \Skip) \\
-%            \t2 \lpar \emptyset | RespInterface | \{ response \} \rpar CollectResp ) \circhide RespInterface \\
-%        \t1 AUpdatePrice \circdef update \then response := \emptyset \circseq \\
-%            \t2 AUpdateResp \circseq display \then failures.response \then \Skip \\ 
-%	\t1 \circspot \lschexpract Init \rschexpract \circseq (\circmu X \circspot (AUpdatemap \extchoice ANewPrice \extchoice AUpdatePrice) \circseq X) \\
-%	\circend
-%\end{circus}
-%
-%\begin{circus}
-%	\circprocess\ ESEL \circdef eid:ESID \circspot \circbegin \\
-%    	\t1 \circstate\ State == [~ price: Price; status: UStatus ~] \\
-%    	\t1	Init == [~ (State)' | price' = 0 \land status' = uok ~] \\
-%        \t1 Update \circdef uupdate.eid?x \then price := x \circseq write.eid.price \then read.eid?y \\
-%            \t2 \then (\lcircguard y = price \rcircguard \circguard ures.eid.uok \then status := uok \\
-%            \t2 \,\,\,\,\,\, \extchoice \lcircguard y \neq price \rcircguard \circguard ures.eid.ufail \then status := ufail) \\
-%        \t1 Display \circdef display \then (\\
-%            \t2 \,\,\,\, \lcircguard status = uok \rcircguard \circguard ondisplay.eid \then \Skip \\
-%            \t2 \extchoice \lcircguard status = ufail \rcircguard \circguard offdisplay.eid \then \Skip) \\
-%        \t1 AInit \circdef \lschexpract Init \rschexpract \circseq offdisplay.eid \then \Skip\\
-%	    \t1 \circspot AInit \circseq (\circmu X \circspot (Update \extchoice Display) \circseq X) \\
-%	\circend
-%\end{circus}

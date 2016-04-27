@@ -1,82 +1,6 @@
 \begin{zsection}
-	\SECTION\ ESELSpec \parents\ circus\_toolkit
+	\SECTION\ ESELSpec \parents\ ESELHeader 
 \end{zsection}
-
-% A set of all product identities and a set of all ESEL identities are defined as given sets $PID$ and $ESID$ respectively. 
-First of all, two constants are defined. $MAX\_ESEL$ and $MAX\_PID$ stand for maximum number of displays and maximum number of product categories (or, products for short) in the system separately.
-\begin{axdef}
-    MAX\_ESEL: \nat \\
-    MAX\_PID: \nat
-\end{axdef}
-
-Then all displays and products are identified by a tag plus a unique number which are defined in the free types $ESID$ and $PID$ below where the constructors $ES$ and $PD$ are the tags for displays and products. For an instance, number ten of the display is given $ES~10$ or $ES(10)$.
-\begin{zed}
-    ESID ::= ES \ldata 1 \upto MAX\_ESEL \rdata \\
-    PID ::= PD \ldata 1 \upto MAX\_PID \rdata
-\end{zed}
-%\begin{zed}
-%    [PID, ESID]
-%\end{zed}
-
-The type of product price is defined as an abbreviation to natural numbers $\nat$.
-\begin{zed}
-    Price == \nat
-\end{zed}
-
-The unit response is defined as a free type with two constants: $uok$ and $ufail$.
-\begin{zed}
-    UStatus ::= uok | ufail
-\end{zed}
-
-The response from this program to the environment is a set of product identities of which the price is not updated successfully due to 1) no linked ESEL ID to the product or 2) failed update to its linked ESEL. The first reason is given the status constant $NA$ and the second is provided the constructor $fail\ldata ESID \rdata$.
-\begin{zed}
-    % NA - no correponding ESEL ID for the product
-    FStatus ::= fail \ldata ESID \rdata | NA 
-\end{zed}
-
-Two channels are provided to update the map from ESEL ID to product ID. $updateallmap$ will clear all stored map and use the input map as new map, while $updatemap$ just updates a partial map. In this map, one ESEL can be linked to up to one product. However, one product may associate with multiple ESELs. 
-\begin{circus}
-	\circchannel\ updateallmap: ESID \pfun PID \\
-	\circchannel\ updatemap: ESID \pfun PID
-\end{circus}
-
-Similarly, two channels are provided to update the price information. $updateallprice$ will clear all price information and use the input price information as new price, while $updateprice$ just updates price partially.  
-\begin{circus}
-	\circchannel\ updateallprice: PID \pfun Price \\
-	\circchannel\ updateprice: PID \pfun Price
-\end{circus}
-
-The $update$ channel gives a signal to the program to start update process.
-\begin{circus}
-	\circchannel\ update
-\end{circus}
-
-The $failures$ channel returns all failed products and related error reasons after update. Since one product may associate with multiple displays, the return status is a power set of $FStatus$ to denote which specific displays that the product links are updated unsuccessfully. But it is worth noting that $NA$ and $fail$ must not occur in a product's return set at the same time because they can not be both no associate display and associate display update fail.
-\begin{circus}
-%	\circchannel\ failures: PID \pfun FStatus \\
-	\circchannel\ failures: PID \pfun \power~FStatus \\
-\end{circus}
-
-The internal $resp$ event is used to collect update responses from all displays and $terminate$ event is for completing the collection.
-\begin{circus}
-    % inside
-	\circchannel\ resp: PID \cross FStatus \\
-    \circchannel\ terminate \\
-    \circchannelset\ RespInterface == \lchanset resp, terminate \rchanset 
-\end{circus}
-
-And $display$ is used to synchronise the show of price on all displays at the same time.
-\begin{circus}
-	\circchannel\ display
-\end{circus}
-
-The channels below are for communication between the ESEL system and displays. The $write$ event writes price to a display, and the $read$ event reads price from the display. $ondisplay$ turns on the related display and $offdisplay$ terns off it conversely.
-\begin{circus}
-	\circchannel\ write: ESID \cross Price \\
-	\circchannel\ read: ESID \cross Price \\
-	\circchannel\ ondisplay: ESID \\
-	\circchannel\ offdisplay: ESID 
-\end{circus}
 
 \paragraph{Controller Process}
 The process for overall control of the system, named $Controller$, is defined as an explicitly defined process.
@@ -238,7 +162,7 @@ The overall behaviour of the $Controller$ process is given by its main action. I
 \end{circus}
 
 \paragraph{System}
-
+The ESEL Specification is simply the $Controller$ process.
 \begin{circus}
     \circprocess\ ESELSpec \circdef  Controller 
 \end{circus}

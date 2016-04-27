@@ -1,18 +1,12 @@
 \begin{zsection}
-	\SECTION\ ESELSystem2 \parents\ circus\_toolkit
+	\SECTION\ ESELSystem2 \parents\ ESELHeader 
 \end{zsection}
 
-Additional constant $MAX\_GATEWAY$ stands for maximum number of gateways.
 \begin{axdef}
-    MAX\_ESEL: \nat \\
-    MAX\_PID: \nat \\
     MAX\_GATEWAY: \nat
 \end{axdef}
 
-Similarly, $GID$ gives all identities for gateways.
 \begin{zed}
-    ESID ::= ES \ldata 1 \upto MAX\_ESEL \rdata \\
-    PID ::= PD \ldata 1 \upto MAX\_PID \rdata \\
     GID ::= GW \ldata 1 \upto MAX\_GATEWAY \rdata 
 \end{zed}
 
@@ -24,50 +18,6 @@ The map from ESELs to gateways, $gwmap$, is defined as a total function. One ESE
     gwmap = \{(ES~1, GW~1), (ES~2, GW~1), (ES~3, GW~2)\}
 \end{axdef}
 
-\begin{zed}
-    Price == \nat
-\end{zed}
-
-\begin{zed}
-    UStatus ::= uok | ufail
-\end{zed}
-
-%The response from this program to the environment is a set of product identities of which the price is not updated successfully due to 1) no linked ESEL ID to the product or 2) failed update to its linked ESEL. The first reason is given the status constant $NA$ and the second is provided the constructor $fail\ldata ESID \rdata$.
-\begin{zed}
-    % NA - no correponding ESEL ID for the product
-    FStatus ::= fail \ldata ESID \rdata | NA 
-\end{zed}
-
-%Two channels are provided to update the map from ESEL ID to product ID. $updateallmap$ will clear all stored map and use the input map as new map, while $updatemap$ just updates a partial map. In this map, one ESEL can be linked to up to one product. However, one product may associate with multiple ESELs. 
-\begin{circus}
-	\circchannel\ updateallmap: ESID \pfun PID \\
-	\circchannel\ updatemap: ESID \pfun PID
-\end{circus}
-
-%Similarly, two channels are provided to update the price information. $updateallprice$ will clear all price information and use the input price information as new price, while $updateprice$ just updates price partially.  
-\begin{circus}
-	\circchannel\ updateallprice: PID \pfun Price \\
-	\circchannel\ updateprice: PID \pfun Price
-\end{circus}
-
-%The $update$ channel gives a signal to the program to start update process.
-\begin{circus}
-	\circchannel\ update
-\end{circus}
-
-%The $failures$ channel returns all failed products and related error reasons after update.
-\begin{circus}
-	\circchannel\ failures: PID \pfun \power~FStatus 
-\end{circus}
-
-%The internal $resp$ event is used to collect update responses from all ESELs.
-\begin{circus}
-    % inside
-	\circchannel\ resp: PID \cross FStatus \\
-    \circchannel\ terminate \\
-    \circchannelset\ RespInterface == \lchanset resp, terminate \rchanset 
-\end{circus}
-
 The channels below are used to communicate between the server and gateways, or between gateway internals. The server uses $gupdateprice$ to send price information with ESEL IDs to the corresponding gateway, while $gfailure$ is used to get back the udpate result from the gateway.
 \begin{circus}
     % price info to start a new update
@@ -75,37 +25,13 @@ The channels below are used to communicate between the server and gateways, or b
     % update result response
 	\circchannel\ gfailure: GID \cross \power~ESID \\
 \end{circus}
+
 $gresp$ and $gterminate$ are used in the internal of gateways to collection update results from each ESEL and terminate after collection.
 \begin{circus}
     % gateway internal response collection
 	\circchannel\ gresp: ESID \\
 	\circchannel\ gterminate \\
     \circchannelset\ GRespInterface == \lchanset gresp, gterminate \rchanset 
-\end{circus}
-
-%This $uupdate$ event is to update one ESEL to the specific price, and $ures$ for update response from this ESEL.
-\begin{circus}
-    % unit
-	\circchannel\ uupdate: ESID \cross Price \\
-	\circchannel\ ures: ESID \cross UStatus \\
-	\circchannel\ uinit, finishuinit\\
-	\circchannel\ udisplay \\
-	\circchannel\ finishudisplay
-\end{circus}
-
-And $display$ is used to synchronise the show of price on all ESELs at the same time and $finishdisplay$ is used to wait for display completion of all ESELs.
-\begin{circus}
-	\circchannel\ init, finishinit \\
-	\circchannel\ display \\
-	\circchannel\ finishdisplay
-\end{circus}
-
-These channels are for communication between ESEL controllers to their linked displays. The $write$ event writes price to its display, and the $read$ event reads price from its display. $ondisplay$ turns on the related display and $offdisplay$ terns off it.
-\begin{circus}
-	\circchannel\ write: ESID \cross Price \\
-	\circchannel\ read: ESID \cross Price \\
-	\circchannel\ ondisplay: ESID \\
-	\circchannel\ offdisplay: ESID 
 \end{circus}
 
 \paragraph{ESEL Server Process}
@@ -198,14 +124,14 @@ Then the update of all products, given in the action $AUpdateProducts$, is the i
 
 The $CollectResp$ action is to collect responses from all units and write them into the $response$ variable. It recursively waits for the response from the units, or terminates if required.
 \begin{circusaction}
-        \t1 CollectResp \circdef \circmu X \circspot \\
+        \t1 ACollectResp \circdef \circmu X \circspot \\
             \t2 ((resp?pid?fst \then \lschexpract AddOneFailure \rschexpract \circseq X) \extchoice terminate \then \Skip) 
 \end{circusaction}
 
 Then update of all products and response collection behaviours are put together into $AUpdateResp$ action. It is a parallel composition of $AUpdateProducts$ and $CollectResp$ actions and they are synchronised with $resp$ and $terminate$ events. Finally, these internal events are hidden.
 \begin{circusaction}
         \t1 AUpdateResp \circdef \\
-            \t2 (AUpdateProducts \lpar \emptyset | RespInterface | \{ response \} \rpar CollectResp ) \\
+            \t2 (AUpdateProducts \lpar \emptyset | RespInterface | \{ response \} \rpar ACollectResp ) \\
             \t2 \circhide RespInterface \\
 \end{circusaction}
 
@@ -269,28 +195,28 @@ Updates of all ESELs in this gateway are put in an iterated interleave, then fol
 
 The $CollectResp$ action is to collect responses from all units and write them into the $response$ variable. It recursively waits for the response from the units, or terminates if required.
 \begin{circusaction}
-        \t1 CollectResp \circdef \circmu X \circspot \\
+        \t1 AGCollectResp \circdef \circmu X \circspot \\
             \t2 ((gresp?uid \then failed := failed \cup \{ uid \} \circseq X) \extchoice gterminate \then \Skip) \\
 \end{circusaction}
 
 Then update of all products and response collection behaviours are put together into $AUpdateResp$ action. It is a parallel composition of $AUpdateProducts$ and $CollectResp$ actions and they are synchronised with $resp$ and $terminate$ events. Finally, these internal events are hidden.
 \begin{circusaction}
-        \t1 AUpdateResp \circdef \\
-            \t2 (AUpdateAllUnits \lpar \emptyset | GRespInterface | \{ failed \} \rpar CollectResp ) \\
+        \t1 AGUpdateResp \circdef \\
+            \t2 (AUpdateAllUnits \lpar \emptyset | GRespInterface | \{ failed \} \rpar AGCollectResp ) \\
             \t2 \circhide GRespInterface \\
 \end{circusaction}
 
 The overall price update action is given in $AUpdatePrice$, which accepts a $gupdateprice$ event from its environment, then clears $failed$, updates the price, sends update results to the server, and waits for $display$ event to make all ESELs in this gateway show their price at the same time.
 \begin{circusaction}
-        \t1 AUpdatePrice \circdef AUpdateallmap \circseq failed := \emptyset \circseq \\
-            \t2 AUpdateResp \circseq gfailure.gid!failed \then display \then udisplay \then \\
+        \t1 AGUpdatePrice \circdef AUpdateallmap \circseq failed := \emptyset \circseq \\
+            \t2 AGUpdateResp \circseq gfailure.gid!failed \then display \then udisplay \then \\
             \t2 finishudisplay \then finishdisplay \then \Skip \\ 
 \end{circusaction}
 
 The overall behaviour of the $Gateway$ process is given by its main action. It initializes at first, then repeatedly provides ESEL map update, price map, or price update to its environment.
 \begin{circusaction}
 	\t1 \circspot \lschexpract Init \rschexpract \circseq init \then uinit \then finishuinit \then finishinit \then \Skip \circseq \\
-    \t2 (\circmu X \circspot (AUpdatePrice) \circseq X) \\
+    \t2 (\circmu X \circspot (AGUpdatePrice) \circseq X) \\
 \end{circusaction}
 
 \begin{circus}
@@ -302,7 +228,7 @@ The overall behaviour of the $Gateway$ process is given by its main action. It i
 
 Each ESEL is defined as a parameterised process with the formal parameter---ESEL ID.
 \begin{circus}
-	\circprocess\ ESEL \circdef eid:ESID \circspot \circbegin \\
+	\circprocess\ ESEL2 \circdef eid:ESID \circspot \circbegin \\
 \end{circus}
 
 The process has two state components: $price$ for the price to display, and $status$ for the status of ESEL.
@@ -342,21 +268,24 @@ The overall behaviour of the process is given by its main action. It specifies t
 \end{circus}
 
 \paragraph{System}
+All ESELS which are registered with the same gateway synchronise on unit initialisation and display events.
 \begin{circus}
-    \circchannelset\ InterESELInterface == \lchanset uinit, finishuinit, \\
+    \circchannelset\ InterESELInterface2 == \lchanset uinit, finishuinit, \\
                 \t5 udisplay, finishudisplay \rchanset \\
-    \circprocess\ ESELS \circdef gid:GID \circspot \\ 
-        \t1 (\Parallel eid: (\dom~(gwmap \rres \{gid\})) \lpar InterESELInterface \rpar \circspot ESEL(eid)) \\
+    \circprocess\ ESELS2 \circdef gid:GID \circspot \\ 
+        \t1 (\Parallel eid: (\dom~(gwmap \rres \{gid\})) \lpar InterESELInterface2 \rpar \circspot ESEL2(eid)) \\
 \end{circus}
 
+Each gateway is in parallel with its linked ESELs and all gateways synchronise on gateway initialisation and display events which is defined as the $Gateways$ process.
 \begin{circus}
-    \circchannelset\ InterGWInterface == \lchanset init, finishinit, display, finishdisplay \rchanset \\
-    \circchannelset\ GWESELInterface == \lchanset uinit, finishuinit, uupdate, ures, \\
+    \circchannelset\ InterGWInterface2 == \lchanset init, finishinit, display, finishdisplay \rchanset \\
+    \circchannelset\ GWESELInterface2 == \lchanset uinit, finishuinit, uupdate, ures, \\
                 \t5 udisplay, finishudisplay \rchanset \\
-    \circprocess\ Gateways \circdef \Parallel gid: GID \lpar InterGWInterface \rpar \circspot \\
-        \t1 (Gateway(gid) \lpar GWESELInterface \rpar ESELS(gid)) \circhide GWESELInterface \\
+    \circprocess\ Gateways \circdef \Parallel gid: GID \lpar InterGWInterface2 \rpar \circspot \\
+        \t1 (Gateway(gid) \lpar GWESELInterface2 \rpar ESELS2(gid)) \circhide GWESELInterface2 \\
 \end{circus}
 
+Finally, the ESEL System 2 is simply the parallel composition of the $ESELServer$ and the $Gateways$, and communications between them are hidden.
 \begin{circus}
     \circchannelset\ ServerGWInterface == \lchanset init, finishinit, gupdateprice, gfailure, \\
                 \t5 display, finishdisplay \rchanset \\
