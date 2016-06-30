@@ -93,11 +93,11 @@
 \end{zed}
 
 \begin{zed}
-	SchExpr\_24 \defs [~  a\_1 , a\_2 : NUMS ; st : SState | a\_1 \leq a\_2  ~]
+	SchExpr\_22 \defs [~  a\_1 , a\_2 : NUMS ; st : SState | a\_1 \leq a\_2  ~]
 \end{zed}
 
 \begin{zed}
-	Analyser\_QSensor \defs SchExpr\_24 [ Analyser\_qa\_1 / a\_1 , Analyser\_qa\_2 / a\_2 , Analyser\_qst / st ]
+	Analyser\_QSensor \defs SchExpr\_22 [ Analyser\_qa\_1 / a\_1 , Analyser\_qa\_2 / a\_2 , Analyser\_qst / st ]
 \end{zed}
 
 \begin{zed}
@@ -105,11 +105,11 @@
 \end{zed}
 
 \begin{zed}
-	SchExpr\_25 \defs [~  a\_1 , a\_2 : NUMS ; st : SState | a\_1 \leq a\_2  ~]
+	SchExpr\_23 \defs [~  a\_1 , a\_2 : NUMS ; st : SState | a\_1 \leq a\_2  ~]
 \end{zed}
 
 \begin{zed}
-	Analyser\_VSensor \defs SchExpr\_25 [ Analyser\_va\_1 / a\_1 , Analyser\_va\_2 / a\_2 , Analyser\_vst / st ]
+	Analyser\_VSensor \defs SchExpr\_23 [ Analyser\_va\_1 / a\_1 , Analyser\_va\_2 / a\_2 , Analyser\_vst / st ]
 \end{zed}
 
 \begin{zed}
@@ -485,7 +485,7 @@
 \end{schema}
 
 \begin{zed}
-	SchExpr\_3 \defs [~  Analyser\_expectedpc' , Analyser\_expectedpc : PumpIndex \fun InputPCState ; Analyser\_expectedp' , Analyser\_expectedp : PumpIndex \fun InputPState ; Analyser\_pumpCtrState' , Analyser\_pumpCtrState : PumpIndex \fun InputPCState ; Analyser\_signalhistory' , Analyser\_signalhistory : \power InputSignal ; Analyser\_q' , Analyser\_q : NUMS ; Analyser\_va\_2' , Analyser\_va\_2 : NUMS ; Analyser\_va\_1' , Analyser\_va\_1 : NUMS ; Analyser\_vc\_2' , Analyser\_vc\_2 : NUMS ; Analyser\_v' , Analyser\_v : NUMS ; Analyser\_vc\_1' , Analyser\_vc\_1 : NUMS ; Analyser\_valve' , Analyser\_valve : VState ; Analyser\_failures' , Analyser\_failures : \power UnitFailure ; Analyser\_qc\_1' , Analyser\_qc\_1 : NUMS ; Analyser\_qa\_2' , Analyser\_qa\_2 : NUMS ; Analyser\_qst' , Analyser\_qst : SState ; Analyser\_qa\_1' , Analyser\_qa\_1 : NUMS ; Analyser\_failureacks' , Analyser\_failureacks : \power UnitFailure ; Analyser\_emergencyCond' , Analyser\_emergencyCond : \{ 0 , 1 \} ; Analyser\_qc\_2' , Analyser\_qc\_2 : NUMS ; Analyser\_stops' , Analyser\_stops : NUMS ; Analyser\_repairs' , Analyser\_repairs : \power UnitFailure ; Analyser\_signals' , Analyser\_signals : \power InputSignal ; Analyser\_vst' , Analyser\_vst : SState ; Analyser\_pumpState' , Analyser\_pumpState : PumpIndex \fun InputPState ; Analyser\_noacks' , Analyser\_noacks : \power UnitFailure | Analyser\_expectedpc' = Analyser\_expectedpc \land Analyser\_expectedp' = Analyser\_expectedp \land Analyser\_pumpCtrState' = Analyser\_pumpCtrState \land Analyser\_signalhistory' = Analyser\_signalhistory \land Analyser\_q' = Analyser\_q \land Analyser\_va\_2' = Analyser\_va\_2 \land Analyser\_va\_1' = Analyser\_va\_1 \land Analyser\_vc\_2' = Analyser\_vc\_2 \land Analyser\_v' = Analyser\_v \land Analyser\_vc\_1' = Analyser\_vc\_1 \land Analyser\_valve' = Analyser\_valve \land Analyser\_failures' = Analyser\_failures \land Analyser\_qc\_1' = Analyser\_qc\_1 \land Analyser\_qa\_2' = Analyser\_qa\_2 \land Analyser\_qst' = Analyser\_qst \land Analyser\_qa\_1' = Analyser\_qa\_1 \land Analyser\_failureacks' = Analyser\_failureacks \land Analyser\_emergencyCond' = Analyser\_emergencyCond \land Analyser\_qc\_2' = Analyser\_qc\_2 \land Analyser\_stops' = Analyser\_stops \land Analyser\_repairs' = Analyser\_repairs \land Analyser\_signals' = Analyser\_signals \land Analyser\_vst' = Analyser\_vst \land Analyser\_pumpState' = Analyser\_pumpState \land Analyser\_noacks' = Analyser\_noacks  ~]
+	Analyser\_SetPumpCtr \defs~\forall i : PumpIndex @ \exists Analyser\_PumpCtr ; Analyser\_PumpCtr' ; pst? , exppst : PState ; pcst? , exppcst : PCState @ ( Analyser\_PromotePumpCheck \land ( ( Analyser\_CheckAndAdjustPumpTBD \land Analyser\_ExpectedPumpStateTBD ) \lor ( Analyser\_CheckAndAdjustPump \land \lnot Analyser\_ExpectedPumpStateTBD ) ) )
 \end{zed}
 
 \begin{schema}{Analyser\_StopPresent}
@@ -559,7 +559,7 @@
 \end{zed}
 
 \begin{zed}
-	Init \defs [~  State' | Reporter\_valveSt' = VNoChange \land \theta Reporter\_OutputMsg' = ((( \LET Reporter\_mode == initialisation ; Reporter\_signals ==~\emptyset ; Reporter\_pumpState == \{ 1 \mapsto pclosed , 2 \mapsto pclosed , 3 \mapsto pclosed , 4 \mapsto pclosed \} ; Reporter\_pumpFailureDetection ==~\emptyset ; Reporter\_pumpCtrFailureDetection ==~\emptyset ; Reporter\_pumpRepairedAcknowledgement ==~\emptyset ; Reporter\_pumpCtrRepairedAcknowledgement ==~\emptyset @ \theta Reporter\_OutputMsg ))) \land Controller\_mode' = initialisation \land Analyser\_InitEquipment \land Analyser\_stops' = 0 \land Analyser\_signalhistory' =~\emptyset \land \theta Analyser\_InputMsg' = ((( \LET Analyser\_signals ==~\emptyset ; Analyser\_pumpState == \{ 1 \mapsto pclosed , 2 \mapsto pclosed , 3 \mapsto pclosed , 4 \mapsto pclosed \} ; Analyser\_pumpCtrState == \{ 1 \mapsto pcnoflow , 2 \mapsto pcnoflow , 3 \mapsto pcnoflow , 4 \mapsto pcnoflow \} ; Analyser\_q == 0 ; Analyser\_v == 0 ; Analyser\_failureacks ==~\emptyset ; Analyser\_repairs ==~\emptyset @ \theta Analyser\_InputMsg ))) \land Analyser\_emergencyCond' = 0 \land Timer\_time' = Timer\_cyclelimit  ~]
+	Init \defs [~  State' | Timer\_time' = Timer\_cyclelimit \land Analyser\_InitEquipment \land Analyser\_stops' = 0 \land Analyser\_signalhistory' =~\emptyset \land \theta Analyser\_InputMsg' = ((( \LET Analyser\_signals ==~\emptyset ; Analyser\_pumpState == \{ 1 \mapsto pclosed , 2 \mapsto pclosed , 3 \mapsto pclosed , 4 \mapsto pclosed \} ; Analyser\_pumpCtrState == \{ 1 \mapsto pcnoflow , 2 \mapsto pcnoflow , 3 \mapsto pcnoflow , 4 \mapsto pcnoflow \} ; Analyser\_q == 0 ; Analyser\_v == 0 ; Analyser\_failureacks ==~\emptyset ; Analyser\_repairs ==~\emptyset @ \theta Analyser\_InputMsg ))) \land Analyser\_emergencyCond' = 0 \land Controller\_mode' = initialisation \land Reporter\_valveSt' = VNoChange \land \theta Reporter\_OutputMsg' = ((( \LET Reporter\_mode == initialisation ; Reporter\_signals ==~\emptyset ; Reporter\_pumpState == \{ 1 \mapsto pclosed , 2 \mapsto pclosed , 3 \mapsto pclosed , 4 \mapsto pclosed \} ; Reporter\_pumpFailureDetection ==~\emptyset ; Reporter\_pumpCtrFailureDetection ==~\emptyset ; Reporter\_pumpRepairedAcknowledgement ==~\emptyset ; Reporter\_pumpCtrRepairedAcknowledgement ==~\emptyset @ \theta Reporter\_OutputMsg )))  ~]
 \end{zed}
 
 \begin{zed}
@@ -583,11 +583,15 @@
 \end{zed}
 
 \begin{zed}
-	Analyser\_SetPumpCtr \defs ( \forall i : PumpIndex @ \exists Analyser\_PumpCtr ; Analyser\_PumpCtr' ; pst? , exppst : PState ; pcst? , exppcst : PCState @ ( Analyser\_PromotePumpCheck \land ( ( Analyser\_CheckAndAdjustPumpTBD \land Analyser\_ExpectedPumpStateTBD ) \lor ( Analyser\_CheckAndAdjustPump \land \lnot Analyser\_ExpectedPumpStateTBD ) ) ) ) \land SchExpr\_3 \land \Xi Timer\_TimeState \land \Xi Controller\_ModeState \land \Xi Reporter\_ReporterState
+	Analyser\_StopSignalHis \defs [~  Analyser\_stops : NUMS ; Analyser\_signalhistory : \power InputSignal  ~]
 \end{zed}
 
 \begin{zed}
-	Analyser\_InitAnalyserState \defs [~  Analyser\_AnalyserState' ; Analyser\_signals : \power InputSignal ; Analyser\_signalhistory : \power InputSignal ; Analyser\_v : NUMS ; Analyser\_qa\_1 : NUMS ; Analyser\_qa\_2 : NUMS ; Analyser\_repairs : \power UnitFailure ; Analyser\_pumpState : PumpIndex \fun InputPState ; Analyser\_qc\_1 : NUMS ; Analyser\_qc\_2 : NUMS ; Analyser\_q : NUMS ; Analyser\_stops : NUMS ; Analyser\_va\_1 : NUMS ; Analyser\_valve : VState ; Analyser\_va\_2 : NUMS ; Analyser\_vc\_1 : NUMS ; Analyser\_pumpctr : PumpIndex \fun Analyser\_PumpCtr ; Analyser\_failureacks : \power UnitFailure ; Analyser\_pta\_2 : \{ 0 , P , 2 * P , 3 * P , 4 * P \} ; Analyser\_qst : SState ; Analyser\_expectedpc : PumpIndex \fun InputPCState ; Analyser\_vc\_2 : NUMS ; Analyser\_vst : SState ; Analyser\_emergencyCond : \{ 0 , 1 \} ; Analyser\_noacks : \power UnitFailure ; Analyser\_failures : \power UnitFailure ; Analyser\_pta\_1 : \{ 0 , P , 2 * P , 3 * P , 4 * P \} ; Analyser\_pumpCtrState : PumpIndex \fun InputPCState ; Analyser\_expectedp : PumpIndex \fun InputPState ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_InitEquipment \land Analyser\_stops' = 0 \land Analyser\_signalhistory' =~\emptyset \land \theta Analyser\_InputMsg' = ((( \LET Analyser\_signals ==~\emptyset ; Analyser\_pumpState == \{ 1 \mapsto pclosed , 2 \mapsto pclosed , 3 \mapsto pclosed , 4 \mapsto pclosed \} ; Analyser\_pumpCtrState == \{ 1 \mapsto pcnoflow , 2 \mapsto pcnoflow , 3 \mapsto pcnoflow , 4 \mapsto pcnoflow \} ; Analyser\_q == 0 ; Analyser\_v == 0 ; Analyser\_failureacks ==~\emptyset ; Analyser\_repairs ==~\emptyset @ \theta Analyser\_InputMsg ))) \land Analyser\_emergencyCond' = 0  ~]
+	Analyser\_PumpOp \defs \Xi Analyser\_QSensor \land \Xi Analyser\_VSensor \land \Xi Analyser\_Valve \land \Xi Analyser\_CValues \land \Xi Analyser\_Failures \land \Xi Analyser\_ExpectedPumpStates \land \Xi Analyser\_InputMsg \land \Xi Analyser\_StopSignalHis \land \Xi Analyser\_EmergenyCond
+\end{zed}
+
+\begin{zed}
+	Analyser\_InitAnalyserState \defs [~  Analyser\_AnalyserState' ; Analyser\_signals : \power InputSignal ; Analyser\_signalhistory : \power InputSignal ; Analyser\_qa\_1 : NUMS ; Analyser\_v : NUMS ; Analyser\_repairs : \power UnitFailure ; Analyser\_qa\_2 : NUMS ; Analyser\_pumpState : PumpIndex \fun InputPState ; Analyser\_qc\_1 : NUMS ; Analyser\_q : NUMS ; Analyser\_qc\_2 : NUMS ; Analyser\_stops : NUMS ; Analyser\_va\_1 : NUMS ; Analyser\_va\_2 : NUMS ; Analyser\_valve : VState ; Analyser\_vc\_1 : NUMS ; Analyser\_pumpctr : PumpIndex \fun Analyser\_PumpCtr ; Analyser\_failureacks : \power UnitFailure ; Analyser\_pta\_2 : \{ 0 , P , 2 * P , 3 * P , 4 * P \} ; Analyser\_qst : SState ; Analyser\_expectedpc : PumpIndex \fun InputPCState ; Analyser\_vc\_2 : NUMS ; Analyser\_vst : SState ; Analyser\_emergencyCond : \{ 0 , 1 \} ; Analyser\_noacks : \power UnitFailure ; Analyser\_failures : \power UnitFailure ; Analyser\_pta\_1 : \{ 0 , P , 2 * P , 3 * P , 4 * P \} ; Analyser\_pumpCtrState : PumpIndex \fun InputPCState ; Analyser\_expectedp : PumpIndex \fun InputPState ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_InitEquipment \land Analyser\_stops' = 0 \land Analyser\_signalhistory' =~\emptyset \land \theta Analyser\_InputMsg' = ((( \LET Analyser\_signals ==~\emptyset ; Analyser\_pumpState == \{ 1 \mapsto pclosed , 2 \mapsto pclosed , 3 \mapsto pclosed , 4 \mapsto pclosed \} ; Analyser\_pumpCtrState == \{ 1 \mapsto pcnoflow , 2 \mapsto pcnoflow , 3 \mapsto pcnoflow , 4 \mapsto pcnoflow \} ; Analyser\_q == 0 ; Analyser\_v == 0 ; Analyser\_failureacks ==~\emptyset ; Analyser\_repairs ==~\emptyset @ \theta Analyser\_InputMsg ))) \land Analyser\_emergencyCond' = 0  ~]
 \end{zed}
 
 \begin{zed}
@@ -635,47 +639,15 @@
 \end{zed}
 
 \begin{zed}
-	SchExpr\_2 \defs [~  Analyser\_pumpCtrState' , Analyser\_pumpCtrState : PumpIndex \fun InputPCState ; Analyser\_signalhistory' , Analyser\_signalhistory : \power InputSignal ; Analyser\_q' , Analyser\_q : NUMS ; Analyser\_expectedp' , Analyser\_expectedp : PumpIndex \fun InputPState ; Analyser\_vc\_2' , Analyser\_vc\_2 : NUMS ; Analyser\_v' , Analyser\_v : NUMS ; Analyser\_vc\_1' , Analyser\_vc\_1 : NUMS ; Analyser\_valve' , Analyser\_valve : VState ; Analyser\_failures' , Analyser\_failures : \power UnitFailure ; Analyser\_qc\_1' , Analyser\_qc\_1 : NUMS ; Analyser\_failureacks' , Analyser\_failureacks : \power UnitFailure ; Analyser\_qc\_2' , Analyser\_qc\_2 : NUMS ; Analyser\_expectedpc' , Analyser\_expectedpc : PumpIndex \fun InputPCState ; Analyser\_stops' , Analyser\_stops : NUMS ; Analyser\_repairs' , Analyser\_repairs : \power UnitFailure ; Analyser\_signals' , Analyser\_signals : \power InputSignal ; Analyser\_pumpState' , Analyser\_pumpState : PumpIndex \fun InputPState ; Analyser\_noacks' , Analyser\_noacks : \power UnitFailure | Analyser\_pumpCtrState' = Analyser\_pumpCtrState \land Analyser\_signalhistory' = Analyser\_signalhistory \land Analyser\_q' = Analyser\_q \land Analyser\_expectedp' = Analyser\_expectedp \land Analyser\_vc\_2' = Analyser\_vc\_2 \land Analyser\_v' = Analyser\_v \land Analyser\_vc\_1' = Analyser\_vc\_1 \land Analyser\_valve' = Analyser\_valve \land Analyser\_failures' = Analyser\_failures \land Analyser\_qc\_1' = Analyser\_qc\_1 \land Analyser\_failureacks' = Analyser\_failureacks \land Analyser\_qc\_2' = Analyser\_qc\_2 \land Analyser\_expectedpc' = Analyser\_expectedpc \land Analyser\_stops' = Analyser\_stops \land Analyser\_repairs' = Analyser\_repairs \land Analyser\_signals' = Analyser\_signals \land Analyser\_pumpState' = Analyser\_pumpState \land Analyser\_noacks' = Analyser\_noacks  ~]
+	Analyser\_HandleRepair \defs Analyser\_RepairEquipments \land Analyser\_EvalRepairFailureAck \land \Xi Analyser\_CValues \land \Xi Analyser\_Failures \land \Xi Analyser\_InputMsg \land \Xi Analyser\_StopSignalHis \land \Xi Analyser\_Valve \land \Xi Analyser\_ExpectedPumpStates \land \Xi Timer\_TimeState \land \Xi Controller\_ModeState \land \Xi Reporter\_ReporterState
 \end{zed}
 
 \begin{zed}
-	Analyser\_HandleRepair \defs Analyser\_RepairEquipments \land Analyser\_EvalRepairFailureAck \land SchExpr\_2 \land \Xi Timer\_TimeState \land \Xi Controller\_ModeState \land \Xi Reporter\_ReporterState
+	Analyser\_PumpOp2 \defs \Xi Analyser\_QSensor \land \Xi Analyser\_VSensor \land \Xi Analyser\_CValues \land \Xi Analyser\_Failures \land \Xi Analyser\_InputMsg \land \Xi Analyser\_StopSignalHis \land \Xi Analyser\_EmergenyCond
 \end{zed}
 
 \begin{zed}
-	SchExpr\_4 \defs [~  Analyser\_vc\_2' , Analyser\_vc\_2 : NUMS ; Analyser\_vc\_1' , Analyser\_vc\_1 : NUMS ; Analyser\_failures' , Analyser\_failures : \power UnitFailure ; Analyser\_qc\_1' , Analyser\_qc\_1 : NUMS ; Analyser\_failureacks' , Analyser\_failureacks : \power UnitFailure ; Analyser\_emergencyCond' , Analyser\_emergencyCond : \{ 0 , 1 \} ; Analyser\_qc\_2' , Analyser\_qc\_2 : NUMS ; Analyser\_repairs' , Analyser\_repairs : \power UnitFailure ; Analyser\_pumpState' , Analyser\_pumpState : PumpIndex \fun InputPState ; Analyser\_pumpCtrState' , Analyser\_pumpCtrState : PumpIndex \fun InputPCState ; Analyser\_signalhistory' , Analyser\_signalhistory : \power InputSignal ; Analyser\_q' , Analyser\_q : NUMS ; Analyser\_va\_2' , Analyser\_va\_2 : NUMS ; Analyser\_va\_1' , Analyser\_va\_1 : NUMS ; Analyser\_v' , Analyser\_v : NUMS ; Analyser\_qa\_2' , Analyser\_qa\_2 : NUMS ; Analyser\_qst' , Analyser\_qst : SState ; Analyser\_qa\_1' , Analyser\_qa\_1 : NUMS ; Analyser\_stops' , Analyser\_stops : NUMS ; Analyser\_signals' , Analyser\_signals : \power InputSignal ; Analyser\_vst' , Analyser\_vst : SState ; Analyser\_noacks' , Analyser\_noacks : \power UnitFailure | Analyser\_vc\_2' = Analyser\_vc\_2 \land Analyser\_vc\_1' = Analyser\_vc\_1 \land Analyser\_failures' = Analyser\_failures \land Analyser\_qc\_1' = Analyser\_qc\_1 \land Analyser\_failureacks' = Analyser\_failureacks \land Analyser\_emergencyCond' = Analyser\_emergencyCond \land Analyser\_qc\_2' = Analyser\_qc\_2 \land Analyser\_repairs' = Analyser\_repairs \land Analyser\_pumpState' = Analyser\_pumpState \land Analyser\_pumpCtrState' = Analyser\_pumpCtrState \land Analyser\_signalhistory' = Analyser\_signalhistory \land Analyser\_q' = Analyser\_q \land Analyser\_va\_2' = Analyser\_va\_2 \land Analyser\_va\_1' = Analyser\_va\_1 \land Analyser\_v' = Analyser\_v \land Analyser\_qa\_2' = Analyser\_qa\_2 \land Analyser\_qst' = Analyser\_qst \land Analyser\_qa\_1' = Analyser\_qa\_1 \land Analyser\_stops' = Analyser\_stops \land Analyser\_signals' = Analyser\_signals \land Analyser\_vst' = Analyser\_vst \land Analyser\_noacks' = Analyser\_noacks  ~]
-\end{zed}
-
-\begin{zed}
-	Analyser\_SetExpectedPumpState \defs Analyser\_CalcExpectedPumpState \land Analyser\_SetValveState \land SchExpr\_4 \land \Xi Timer\_TimeState \land \Xi Controller\_ModeState \land \Xi Reporter\_ReporterState
-\end{zed}
-
-\begin{zed}
-	Analyser\_OP\_vst \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_vst! : SState ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_vst! = Analyser\_vst  ~]
-\end{zed}
-
-\begin{zed}
-	Analyser\_OP\_expectedpc \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_expectedpc! : PumpIndex \fun InputPCState ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_expectedpc! = Analyser\_expectedpc  ~]
-\end{zed}
-
-\begin{zed}
-	Analyser\_OP\_signals \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_signals! : \power InputSignal ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_signals! = Analyser\_signals  ~]
-\end{zed}
-
-\begin{zed}
-	Analyser\_OP\_noacks \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_noacks! : \power UnitFailure ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_noacks! = Analyser\_noacks  ~]
-\end{zed}
-
-\begin{zed}
-	Analyser\_OP\_valve \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_valve! : VState ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_valve! = Analyser\_valve  ~]
-\end{zed}
-
-\begin{zed}
-	Analyser\_OP\_pumpState \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_pumpState! : PumpIndex \fun InputPState ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_pumpState! = Analyser\_pumpState  ~]
-\end{zed}
-
-\begin{zed}
-	Analyser\_OP\_va\_1 \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_va\_1! : NUMS ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_va\_1! = Analyser\_va\_1  ~]
+	Analyser\_SetExpectedPumpState \defs Analyser\_CalcExpectedPumpState \land Analyser\_SetValveState \land Analyser\_PumpOp2 \land \Xi Timer\_TimeState \land \Xi Controller\_ModeState \land \Xi Reporter\_ReporterState
 \end{zed}
 
 \begin{zed}
@@ -683,15 +655,11 @@
 \end{zed}
 
 \begin{zed}
-	Analyser\_OP\_qa\_2 \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_qa\_2! : NUMS ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_qa\_2! = Analyser\_qa\_2  ~]
+	Analyser\_OP\_qst \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_qst! : SState ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_qst! = Analyser\_qst  ~]
 \end{zed}
 
 \begin{zed}
-	Analyser\_OP\_repairs \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_repairs! : \power UnitFailure ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_repairs! = Analyser\_repairs  ~]
-\end{zed}
-
-\begin{zed}
-	Analyser\_OP\_vc\_2 \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_vc\_2! : NUMS ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_vc\_2! = Analyser\_vc\_2  ~]
+	Analyser\_OP\_va\_2 \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_va\_2! : NUMS ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_va\_2! = Analyser\_va\_2  ~]
 \end{zed}
 
 \begin{zed}
@@ -699,7 +667,7 @@
 \end{zed}
 
 \begin{zed}
-	Analyser\_OP\_pta\_2 \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_pta\_2! : \{ 0 , P , 2 * P , 3 * P , 4 * P \} ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_pta\_2! = Analyser\_pta\_2  ~]
+	Analyser\_OP\_vc\_1 \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_vc\_1! : NUMS ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_vc\_1! = Analyser\_vc\_1  ~]
 \end{zed}
 
 \begin{zed}
@@ -707,43 +675,7 @@
 \end{zed}
 
 \begin{zed}
-	Analyser\_OP\_stops \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_stops! : NUMS ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_stops! = Analyser\_stops  ~]
-\end{zed}
-
-\begin{zed}
-	Analyser\_OP\_qa\_1 \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_qa\_1! : NUMS ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_qa\_1! = Analyser\_qa\_1  ~]
-\end{zed}
-
-\begin{zed}
-	Analyser\_OP\_qc\_2 \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_qc\_2! : NUMS ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_qc\_2! = Analyser\_qc\_2  ~]
-\end{zed}
-
-\begin{zed}
-	Analyser\_OP\_signalhistory \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_signalhistory! : \power InputSignal ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_signalhistory! = Analyser\_signalhistory  ~]
-\end{zed}
-
-\begin{zed}
-	Analyser\_OP\_qst \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_qst! : SState ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_qst! = Analyser\_qst  ~]
-\end{zed}
-
-\begin{zed}
-	Analyser\_OP\_pumpctr \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_pumpctr! : PumpIndex \fun Analyser\_PumpCtr ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_pumpctr! = Analyser\_pumpctr  ~]
-\end{zed}
-
-\begin{zed}
-	Analyser\_OP\_v \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_v! : NUMS ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_v! = Analyser\_v  ~]
-\end{zed}
-
-\begin{zed}
-	Analyser\_OP\_emergencyCond \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_emergencyCond! : \{ 0 , 1 \} ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_emergencyCond! = Analyser\_emergencyCond  ~]
-\end{zed}
-
-\begin{zed}
-	Analyser\_OP\_pumpCtrState \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_pumpCtrState! : PumpIndex \fun InputPCState ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_pumpCtrState! = Analyser\_pumpCtrState  ~]
-\end{zed}
-
-\begin{zed}
-	Analyser\_OP\_failureacks \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_failureacks! : \power UnitFailure ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_failureacks! = Analyser\_failureacks  ~]
+	Analyser\_OP\_qa\_2 \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_qa\_2! : NUMS ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_qa\_2! = Analyser\_qa\_2  ~]
 \end{zed}
 
 \begin{zed}
@@ -751,7 +683,35 @@
 \end{zed}
 
 \begin{zed}
-	Analyser\_OP\_vc\_1 \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_vc\_1! : NUMS ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_vc\_1! = Analyser\_vc\_1  ~]
+	Analyser\_OP\_stops \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_stops! : NUMS ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_stops! = Analyser\_stops  ~]
+\end{zed}
+
+\begin{zed}
+	Analyser\_OP\_pumpState \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_pumpState! : PumpIndex \fun InputPState ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_pumpState! = Analyser\_pumpState  ~]
+\end{zed}
+
+\begin{zed}
+	Analyser\_OP\_noacks \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_noacks! : \power UnitFailure ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_noacks! = Analyser\_noacks  ~]
+\end{zed}
+
+\begin{zed}
+	Analyser\_OP\_qa\_1 \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_qa\_1! : NUMS ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_qa\_1! = Analyser\_qa\_1  ~]
+\end{zed}
+
+\begin{zed}
+	Analyser\_OP\_pumpctr \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_pumpctr! : PumpIndex \fun Analyser\_PumpCtr ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_pumpctr! = Analyser\_pumpctr  ~]
+\end{zed}
+
+\begin{zed}
+	Analyser\_OP\_failureacks \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_failureacks! : \power UnitFailure ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_failureacks! = Analyser\_failureacks  ~]
+\end{zed}
+
+\begin{zed}
+	Analyser\_OP\_repairs \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_repairs! : \power UnitFailure ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_repairs! = Analyser\_repairs  ~]
+\end{zed}
+
+\begin{zed}
+	Analyser\_OP\_expectedpc \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_expectedpc! : PumpIndex \fun InputPCState ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_expectedpc! = Analyser\_expectedpc  ~]
 \end{zed}
 
 \begin{zed}
@@ -759,7 +719,47 @@
 \end{zed}
 
 \begin{zed}
-	Analyser\_OP\_va\_2 \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_va\_2! : NUMS ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_va\_2! = Analyser\_va\_2  ~]
+	Analyser\_OP\_emergencyCond \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_emergencyCond! : \{ 0 , 1 \} ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_emergencyCond! = Analyser\_emergencyCond  ~]
+\end{zed}
+
+\begin{zed}
+	Analyser\_OP\_pta\_2 \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_pta\_2! : \{ 0 , P , 2 * P , 3 * P , 4 * P \} ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_pta\_2! = Analyser\_pta\_2  ~]
+\end{zed}
+
+\begin{zed}
+	Analyser\_OP\_valve \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_valve! : VState ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_valve! = Analyser\_valve  ~]
+\end{zed}
+
+\begin{zed}
+	Analyser\_OP\_signals \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_signals! : \power InputSignal ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_signals! = Analyser\_signals  ~]
+\end{zed}
+
+\begin{zed}
+	Analyser\_OP\_v \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_v! : NUMS ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_v! = Analyser\_v  ~]
+\end{zed}
+
+\begin{zed}
+	Analyser\_OP\_vc\_2 \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_vc\_2! : NUMS ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_vc\_2! = Analyser\_vc\_2  ~]
+\end{zed}
+
+\begin{zed}
+	Analyser\_OP\_signalhistory \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_signalhistory! : \power InputSignal ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_signalhistory! = Analyser\_signalhistory  ~]
+\end{zed}
+
+\begin{zed}
+	Analyser\_OP\_vst \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_vst! : SState ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_vst! = Analyser\_vst  ~]
+\end{zed}
+
+\begin{zed}
+	Analyser\_OP\_pumpCtrState \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_pumpCtrState! : PumpIndex \fun InputPCState ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_pumpCtrState! = Analyser\_pumpCtrState  ~]
+\end{zed}
+
+\begin{zed}
+	Analyser\_OP\_va\_1 \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_va\_1! : NUMS ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_va\_1! = Analyser\_va\_1  ~]
+\end{zed}
+
+\begin{zed}
+	Analyser\_OP\_qc\_2 \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_qc\_2! : NUMS ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | Analyser\_qc\_2! = Analyser\_qc\_2  ~]
 \end{zed}
 
 \begin{zed}
@@ -771,11 +771,15 @@
 \end{zed}
 
 \begin{zed}
-	Analyser\_SetPumpCtr\_fOp \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_pumpCtrState? : PumpIndex \fun InputPCState ; Analyser\_pumpState? : PumpIndex \fun InputPState ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | \lnot \pre Analyser\_SetPumpCtr  ~]
+	SchExpr\_2 \defs Analyser\_SetPumpCtr \land Analyser\_PumpOp \land \Xi Timer\_TimeState \land \Xi Controller\_ModeState \land \Xi Reporter\_ReporterState
 \end{zed}
 
 \begin{zed}
-	Analyser\_Analyse\_fOp \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_pumpCtrState? : PumpIndex \fun InputPCState ; Analyser\_q? : NUMS ; Analyser\_pumpState? : PumpIndex \fun InputPState ; Analyser\_signals? : \power InputSignal ; Analyser\_failureacks? : \power UnitFailure ; Analyser\_repairs? : \power UnitFailure ; Analyser\_v? : NUMS ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | \lnot \pre Analyser\_Analyse  ~]
+	SchExpr\_2\_fOp \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_pumpState? : PumpIndex \fun InputPState ; Analyser\_pumpCtrState? : PumpIndex \fun InputPCState ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | \lnot \pre SchExpr\_2  ~]
+\end{zed}
+
+\begin{zed}
+	Analyser\_Analyse\_fOp \defs [~  \Xi Analyser\_AnalyserState ; Analyser\_signals? : \power InputSignal ; Analyser\_pumpCtrState? : PumpIndex \fun InputPCState ; Analyser\_v? : NUMS ; Analyser\_failureacks? : \power UnitFailure ; Analyser\_pumpState? : PumpIndex \fun InputPState ; Analyser\_repairs? : \power UnitFailure ; Analyser\_q? : NUMS ; \Xi Timer\_TimeState ; \Xi Controller\_ModeState ; \Xi Reporter\_ReporterState | \lnot \pre Analyser\_Analyse  ~]
 \end{zed}
 
 \begin{zed}
@@ -795,15 +799,23 @@
 \end{zed}
 
 \begin{zed}
-	Controller\_AssgnOp5 \defs [~  \Delta Controller\_ModeState ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Reporter\_ReporterState | Controller\_mode' = emergencyStop  ~]
+	Controller\_AssgnOp3 \defs [~  \Delta Controller\_ModeState ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Reporter\_ReporterState | Controller\_mode' = emergencyStop  ~]
 \end{zed}
 
 \begin{zed}
-	Controller\_AssgnOp6 \defs [~  \Delta Controller\_ModeState ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Reporter\_ReporterState | Controller\_mode' = normal  ~]
+	Controller\_AssgnOp4 \defs [~  \Delta Controller\_ModeState ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Reporter\_ReporterState | Controller\_mode' = normal  ~]
 \end{zed}
 
 \begin{zed}
-	Controller\_AssgnOp7 \defs [~  \Delta Controller\_ModeState ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Reporter\_ReporterState | Controller\_mode' = degraded  ~]
+	Controller\_AssgnOp5 \defs [~  \Delta Controller\_ModeState ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Reporter\_ReporterState | Controller\_mode' = degraded  ~]
+\end{zed}
+
+\begin{zed}
+	Controller\_AssgnOp6 \defs [~  \Delta Controller\_ModeState ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Reporter\_ReporterState | Controller\_mode' = emergencyStop  ~]
+\end{zed}
+
+\begin{zed}
+	Controller\_AssgnOp7 \defs [~  \Delta Controller\_ModeState ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Reporter\_ReporterState | Controller\_mode' = emergencyStop  ~]
 \end{zed}
 
 \begin{zed}
@@ -811,19 +823,19 @@
 \end{zed}
 
 \begin{zed}
-	Controller\_AssgnOp9 \defs [~  \Delta Controller\_ModeState ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Reporter\_ReporterState | Controller\_mode' = emergencyStop  ~]
+	Controller\_AssgnOp9 \defs [~  \Delta Controller\_ModeState ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Reporter\_ReporterState | Controller\_mode' = rescue  ~]
 \end{zed}
 
 \begin{zed}
-	Controller\_AssgnOp10 \defs [~  \Delta Controller\_ModeState ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Reporter\_ReporterState | Controller\_mode' = emergencyStop  ~]
+	Controller\_AssgnOp10 \defs [~  \Delta Controller\_ModeState ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Reporter\_ReporterState | Controller\_mode' = degraded  ~]
 \end{zed}
 
 \begin{zed}
-	Controller\_AssgnOp11 \defs [~  \Delta Controller\_ModeState ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Reporter\_ReporterState | Controller\_mode' = rescue  ~]
+	Controller\_AssgnOp11 \defs [~  \Delta Controller\_ModeState ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Reporter\_ReporterState | Controller\_mode' = normal  ~]
 \end{zed}
 
 \begin{zed}
-	Controller\_AssgnOp12 \defs [~  \Delta Controller\_ModeState ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Reporter\_ReporterState | Controller\_mode' = degraded  ~]
+	Controller\_AssgnOp12 \defs [~  \Delta Controller\_ModeState ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Reporter\_ReporterState | Controller\_mode' = rescue  ~]
 \end{zed}
 
 \begin{zed}
@@ -831,19 +843,11 @@
 \end{zed}
 
 \begin{zed}
-	Controller\_AssgnOp14 \defs [~  \Delta Controller\_ModeState ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Reporter\_ReporterState | Controller\_mode' = rescue  ~]
+	Controller\_AssgnOp14 \defs [~  \Delta Controller\_ModeState ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Reporter\_ReporterState | Controller\_mode' = degraded  ~]
 \end{zed}
 
 \begin{zed}
-	Controller\_AssgnOp15 \defs [~  \Delta Controller\_ModeState ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Reporter\_ReporterState | Controller\_mode' = normal  ~]
-\end{zed}
-
-\begin{zed}
-	Controller\_AssgnOp16 \defs [~  \Delta Controller\_ModeState ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Reporter\_ReporterState | Controller\_mode' = degraded  ~]
-\end{zed}
-
-\begin{zed}
-	Reporter\_InitReporter \defs [~  Reporter\_ReporterState' ; Reporter\_pumpCtrFailureDetection : \power UnitFailure ; Reporter\_mode : Mode ; Reporter\_pumpFailureDetection : \power UnitFailure ; Reporter\_signals : \power OutputSignal ; Reporter\_pumpCtrRepairedAcknowledgement : \power UnitFailure ; Reporter\_pumpState : PumpIndex \fun InputPState ; Reporter\_pumpRepairedAcknowledgement : \power UnitFailure ; Reporter\_valveSt : VAction ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Controller\_ModeState | Reporter\_valveSt' = VNoChange \land \theta Reporter\_OutputMsg' = ((( \LET Reporter\_mode == initialisation ; Reporter\_signals ==~\emptyset ; Reporter\_pumpState == \{ 1 \mapsto pclosed , 2 \mapsto pclosed , 3 \mapsto pclosed , 4 \mapsto pclosed \} ; Reporter\_pumpFailureDetection ==~\emptyset ; Reporter\_pumpCtrFailureDetection ==~\emptyset ; Reporter\_pumpRepairedAcknowledgement ==~\emptyset ; Reporter\_pumpCtrRepairedAcknowledgement ==~\emptyset @ \theta Reporter\_OutputMsg )))  ~]
+	Reporter\_InitReporter \defs [~  Reporter\_ReporterState' ; Reporter\_pumpCtrFailureDetection : \power UnitFailure ; Reporter\_mode : Mode ; Reporter\_signals : \power OutputSignal ; Reporter\_pumpFailureDetection : \power UnitFailure ; Reporter\_pumpState : PumpIndex \fun InputPState ; Reporter\_pumpCtrRepairedAcknowledgement : \power UnitFailure ; Reporter\_pumpRepairedAcknowledgement : \power UnitFailure ; Reporter\_valveSt : VAction ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Controller\_ModeState | Reporter\_valveSt' = VNoChange \land \theta Reporter\_OutputMsg' = ((( \LET Reporter\_mode == initialisation ; Reporter\_signals ==~\emptyset ; Reporter\_pumpState == \{ 1 \mapsto pclosed , 2 \mapsto pclosed , 3 \mapsto pclosed , 4 \mapsto pclosed \} ; Reporter\_pumpFailureDetection ==~\emptyset ; Reporter\_pumpCtrFailureDetection ==~\emptyset ; Reporter\_pumpRepairedAcknowledgement ==~\emptyset ; Reporter\_pumpCtrRepairedAcknowledgement ==~\emptyset @ \theta Reporter\_OutputMsg )))  ~]
 \end{zed}
 
 \begin{zed}
@@ -851,27 +855,11 @@
 \end{zed}
 
 \begin{zed}
-	Reporter\_OP\_signals \defs [~  \Xi Reporter\_ReporterState ; Reporter\_signals! : \power OutputSignal ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Controller\_ModeState | Reporter\_signals! = Reporter\_signals  ~]
-\end{zed}
-
-\begin{zed}
-	Reporter\_OP\_pumpFailureDetection \defs [~  \Xi Reporter\_ReporterState ; Reporter\_pumpFailureDetection! : \power UnitFailure ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Controller\_ModeState | Reporter\_pumpFailureDetection! = Reporter\_pumpFailureDetection  ~]
-\end{zed}
-
-\begin{zed}
-	Reporter\_OP\_valveSt \defs [~  \Xi Reporter\_ReporterState ; Reporter\_valveSt! : VAction ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Controller\_ModeState | Reporter\_valveSt! = Reporter\_valveSt  ~]
-\end{zed}
-
-\begin{zed}
-	Reporter\_OP\_pumpRepairedAcknowledgement \defs [~  \Xi Reporter\_ReporterState ; Reporter\_pumpRepairedAcknowledgement! : \power UnitFailure ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Controller\_ModeState | Reporter\_pumpRepairedAcknowledgement! = Reporter\_pumpRepairedAcknowledgement  ~]
-\end{zed}
-
-\begin{zed}
 	Reporter\_OP\_pumpState \defs [~  \Xi Reporter\_ReporterState ; Reporter\_pumpState! : PumpIndex \fun InputPState ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Controller\_ModeState | Reporter\_pumpState! = Reporter\_pumpState  ~]
 \end{zed}
 
 \begin{zed}
-	Reporter\_OP\_mode \defs [~  \Xi Reporter\_ReporterState ; Reporter\_mode! : Mode ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Controller\_ModeState | Reporter\_mode! = Reporter\_mode  ~]
+	Reporter\_OP\_pumpRepairedAcknowledgement \defs [~  \Xi Reporter\_ReporterState ; Reporter\_pumpRepairedAcknowledgement! : \power UnitFailure ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Controller\_ModeState | Reporter\_pumpRepairedAcknowledgement! = Reporter\_pumpRepairedAcknowledgement  ~]
 \end{zed}
 
 \begin{zed}
@@ -883,35 +871,51 @@
 \end{zed}
 
 \begin{zed}
+	Reporter\_OP\_signals \defs [~  \Xi Reporter\_ReporterState ; Reporter\_signals! : \power OutputSignal ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Controller\_ModeState | Reporter\_signals! = Reporter\_signals  ~]
+\end{zed}
+
+\begin{zed}
+	Reporter\_OP\_valveSt \defs [~  \Xi Reporter\_ReporterState ; Reporter\_valveSt! : VAction ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Controller\_ModeState | Reporter\_valveSt! = Reporter\_valveSt  ~]
+\end{zed}
+
+\begin{zed}
+	Reporter\_OP\_pumpFailureDetection \defs [~  \Xi Reporter\_ReporterState ; Reporter\_pumpFailureDetection! : \power UnitFailure ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Controller\_ModeState | Reporter\_pumpFailureDetection! = Reporter\_pumpFailureDetection  ~]
+\end{zed}
+
+\begin{zed}
+	Reporter\_OP\_mode \defs [~  \Xi Reporter\_ReporterState ; Reporter\_mode! : Mode ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Controller\_ModeState | Reporter\_mode! = Reporter\_mode  ~]
+\end{zed}
+
+\begin{zed}
 	Reporter\_InitReporter\_fOp \defs [~  \Xi Reporter\_ReporterState ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Controller\_ModeState | \lnot \pre Reporter\_InitReporter  ~]
 \end{zed}
 
 \begin{zed}
-	Reporter\_AssgnOp17 \defs [~  \Delta Reporter\_ReporterState ; m? : Nonemergency ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Controller\_ModeState | Reporter\_mode' = m? \land Reporter\_pumpCtrFailureDetection' = Reporter\_pumpCtrFailureDetection \land Reporter\_pumpFailureDetection' = Reporter\_pumpFailureDetection \land Reporter\_valveSt' = Reporter\_valveSt \land Reporter\_pumpState' = Reporter\_pumpState \land Reporter\_pumpRepairedAcknowledgement' = Reporter\_pumpRepairedAcknowledgement \land Reporter\_pumpCtrRepairedAcknowledgement' = Reporter\_pumpCtrRepairedAcknowledgement \land Reporter\_signals' = Reporter\_signals  ~]
+	Reporter\_AssgnOp15 \defs [~  \Delta Reporter\_ReporterState ; m? : Nonemergency ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Controller\_ModeState | Reporter\_mode' = m? \land Reporter\_valveSt' = Reporter\_valveSt \land Reporter\_pumpCtrFailureDetection' = Reporter\_pumpCtrFailureDetection \land Reporter\_pumpState' = Reporter\_pumpState \land Reporter\_pumpRepairedAcknowledgement' = Reporter\_pumpRepairedAcknowledgement \land Reporter\_pumpCtrRepairedAcknowledgement' = Reporter\_pumpCtrRepairedAcknowledgement \land Reporter\_pumpFailureDetection' = Reporter\_pumpFailureDetection \land Reporter\_signals' = Reporter\_signals  ~]
 \end{zed}
 
 \begin{zed}
-	Reporter\_AssgnOp18 \defs [~  \Delta Reporter\_ReporterState ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Controller\_ModeState | Reporter\_signals' = Reporter\_signals \cup \{ programReady \} \land Reporter\_pumpCtrFailureDetection' = Reporter\_pumpCtrFailureDetection \land Reporter\_pumpFailureDetection' = Reporter\_pumpFailureDetection \land Reporter\_valveSt' = Reporter\_valveSt \land Reporter\_pumpState' = Reporter\_pumpState \land Reporter\_pumpRepairedAcknowledgement' = Reporter\_pumpRepairedAcknowledgement \land Reporter\_mode' = Reporter\_mode \land Reporter\_pumpCtrRepairedAcknowledgement' = Reporter\_pumpCtrRepairedAcknowledgement  ~]
+	Reporter\_AssgnOp16 \defs [~  \Delta Reporter\_ReporterState ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Controller\_ModeState | Reporter\_signals' = Reporter\_signals \cup \{ programReady \} \land Reporter\_mode' = Reporter\_mode \land Reporter\_valveSt' = Reporter\_valveSt \land Reporter\_pumpCtrFailureDetection' = Reporter\_pumpCtrFailureDetection \land Reporter\_pumpState' = Reporter\_pumpState \land Reporter\_pumpRepairedAcknowledgement' = Reporter\_pumpRepairedAcknowledgement \land Reporter\_pumpCtrRepairedAcknowledgement' = Reporter\_pumpCtrRepairedAcknowledgement \land Reporter\_pumpFailureDetection' = Reporter\_pumpFailureDetection  ~]
 \end{zed}
 
 \begin{zed}
-	Reporter\_AssgnOp19 \defs [~  \Delta Reporter\_ReporterState ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Controller\_ModeState | Reporter\_pumpState' = PumpIndex \cross \{ popen \} \land Reporter\_pumpCtrFailureDetection' = Reporter\_pumpCtrFailureDetection \land Reporter\_pumpFailureDetection' = Reporter\_pumpFailureDetection \land Reporter\_valveSt' = Reporter\_valveSt \land Reporter\_pumpRepairedAcknowledgement' = Reporter\_pumpRepairedAcknowledgement \land Reporter\_mode' = Reporter\_mode \land Reporter\_pumpCtrRepairedAcknowledgement' = Reporter\_pumpCtrRepairedAcknowledgement \land Reporter\_signals' = Reporter\_signals  ~]
+	Reporter\_AssgnOp17 \defs [~  \Delta Reporter\_ReporterState ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Controller\_ModeState | Reporter\_pumpState' = PumpIndex \cross \{ popen \} \land Reporter\_mode' = Reporter\_mode \land Reporter\_valveSt' = Reporter\_valveSt \land Reporter\_pumpCtrFailureDetection' = Reporter\_pumpCtrFailureDetection \land Reporter\_pumpRepairedAcknowledgement' = Reporter\_pumpRepairedAcknowledgement \land Reporter\_pumpCtrRepairedAcknowledgement' = Reporter\_pumpCtrRepairedAcknowledgement \land Reporter\_pumpFailureDetection' = Reporter\_pumpFailureDetection \land Reporter\_signals' = Reporter\_signals  ~]
 \end{zed}
 
 \begin{zed}
-	Reporter\_AssgnOp20 \defs [~  \Delta Reporter\_ReporterState ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Controller\_ModeState | Reporter\_pumpState' = PumpIndex \cross \{ pclosed \} \land Reporter\_pumpCtrFailureDetection' = Reporter\_pumpCtrFailureDetection \land Reporter\_pumpFailureDetection' = Reporter\_pumpFailureDetection \land Reporter\_valveSt' = Reporter\_valveSt \land Reporter\_pumpRepairedAcknowledgement' = Reporter\_pumpRepairedAcknowledgement \land Reporter\_mode' = Reporter\_mode \land Reporter\_pumpCtrRepairedAcknowledgement' = Reporter\_pumpCtrRepairedAcknowledgement \land Reporter\_signals' = Reporter\_signals  ~]
+	Reporter\_AssgnOp18 \defs [~  \Delta Reporter\_ReporterState ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Controller\_ModeState | Reporter\_pumpState' = PumpIndex \cross \{ pclosed \} \land Reporter\_mode' = Reporter\_mode \land Reporter\_valveSt' = Reporter\_valveSt \land Reporter\_pumpCtrFailureDetection' = Reporter\_pumpCtrFailureDetection \land Reporter\_pumpRepairedAcknowledgement' = Reporter\_pumpRepairedAcknowledgement \land Reporter\_pumpCtrRepairedAcknowledgement' = Reporter\_pumpCtrRepairedAcknowledgement \land Reporter\_pumpFailureDetection' = Reporter\_pumpFailureDetection \land Reporter\_signals' = Reporter\_signals  ~]
 \end{zed}
 
 \begin{zed}
-	Reporter\_AssgnOp21 \defs [~  \Delta Reporter\_ReporterState ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Controller\_ModeState | Reporter\_signals' = Reporter\_signals \cup \{ openValve \} \land Reporter\_valveSt' = openv \land Reporter\_pumpCtrFailureDetection' = Reporter\_pumpCtrFailureDetection \land Reporter\_pumpFailureDetection' = Reporter\_pumpFailureDetection \land Reporter\_pumpState' = Reporter\_pumpState \land Reporter\_pumpRepairedAcknowledgement' = Reporter\_pumpRepairedAcknowledgement \land Reporter\_mode' = Reporter\_mode \land Reporter\_pumpCtrRepairedAcknowledgement' = Reporter\_pumpCtrRepairedAcknowledgement  ~]
+	Reporter\_AssgnOp19 \defs [~  \Delta Reporter\_ReporterState ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Controller\_ModeState | Reporter\_signals' = Reporter\_signals \cup \{ openValve \} \land Reporter\_valveSt' = openv \land Reporter\_mode' = Reporter\_mode \land Reporter\_pumpCtrFailureDetection' = Reporter\_pumpCtrFailureDetection \land Reporter\_pumpState' = Reporter\_pumpState \land Reporter\_pumpRepairedAcknowledgement' = Reporter\_pumpRepairedAcknowledgement \land Reporter\_pumpCtrRepairedAcknowledgement' = Reporter\_pumpCtrRepairedAcknowledgement \land Reporter\_pumpFailureDetection' = Reporter\_pumpFailureDetection  ~]
 \end{zed}
 
 \begin{zed}
-	Reporter\_AssgnOp22 \defs [~  \Delta Reporter\_ReporterState ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Controller\_ModeState | Reporter\_signals' = Reporter\_signals \cup \{ closeValve \} \land Reporter\_valveSt' = closev \land Reporter\_pumpCtrFailureDetection' = Reporter\_pumpCtrFailureDetection \land Reporter\_pumpFailureDetection' = Reporter\_pumpFailureDetection \land Reporter\_pumpState' = Reporter\_pumpState \land Reporter\_pumpRepairedAcknowledgement' = Reporter\_pumpRepairedAcknowledgement \land Reporter\_mode' = Reporter\_mode \land Reporter\_pumpCtrRepairedAcknowledgement' = Reporter\_pumpCtrRepairedAcknowledgement  ~]
+	Reporter\_AssgnOp20 \defs [~  \Delta Reporter\_ReporterState ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Controller\_ModeState | Reporter\_signals' = Reporter\_signals \cup \{ closeValve \} \land Reporter\_valveSt' = closev \land Reporter\_mode' = Reporter\_mode \land Reporter\_pumpCtrFailureDetection' = Reporter\_pumpCtrFailureDetection \land Reporter\_pumpState' = Reporter\_pumpState \land Reporter\_pumpRepairedAcknowledgement' = Reporter\_pumpRepairedAcknowledgement \land Reporter\_pumpCtrRepairedAcknowledgement' = Reporter\_pumpCtrRepairedAcknowledgement \land Reporter\_pumpFailureDetection' = Reporter\_pumpFailureDetection  ~]
 \end{zed}
 
 \begin{zed}
-	Reporter\_AssgnOp23 \defs [~  \Delta Reporter\_ReporterState ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Controller\_ModeState | Reporter\_mode' = emergencyStop \land Reporter\_pumpCtrFailureDetection' = Reporter\_pumpCtrFailureDetection \land Reporter\_pumpFailureDetection' = Reporter\_pumpFailureDetection \land Reporter\_valveSt' = Reporter\_valveSt \land Reporter\_pumpState' = Reporter\_pumpState \land Reporter\_pumpRepairedAcknowledgement' = Reporter\_pumpRepairedAcknowledgement \land Reporter\_pumpCtrRepairedAcknowledgement' = Reporter\_pumpCtrRepairedAcknowledgement \land Reporter\_signals' = Reporter\_signals  ~]
+	Reporter\_AssgnOp21 \defs [~  \Delta Reporter\_ReporterState ; \Xi Timer\_TimeState ; \Xi Analyser\_AnalyserState ; \Xi Controller\_ModeState | Reporter\_mode' = emergencyStop \land Reporter\_valveSt' = Reporter\_valveSt \land Reporter\_pumpCtrFailureDetection' = Reporter\_pumpCtrFailureDetection \land Reporter\_pumpState' = Reporter\_pumpState \land Reporter\_pumpRepairedAcknowledgement' = Reporter\_pumpRepairedAcknowledgement \land Reporter\_pumpCtrRepairedAcknowledgement' = Reporter\_pumpCtrRepairedAcknowledgement \land Reporter\_pumpFailureDetection' = Reporter\_pumpFailureDetection \land Reporter\_signals' = Reporter\_signals  ~]
 \end{zed}
 
 \begin{zed}

@@ -5,7 +5,8 @@
 %\setmarginsrb{leftmargin}{topmargin}{rightmargin}{bottommargin}{headheight}{headsep}{footheight}{footskip}
 %\setmarginsrb{20mm}{10mm}{20mm}{10mm}{12pt}{11mm}{0pt}{11mm}
 %\setmarginsrb{25mm}{20mm}{25mm}{20mm}{12pt}{11mm}{0pt}{10mm}
-\setmarginsrb{40mm}{20mm}{40mm}{20mm}{12pt}{11mm}{0pt}{10mm}
+%\setmarginsrb{40mm}{20mm}{40mm}{20mm}{12pt}{11mm}{0pt}{10mm}
+\setmarginsrb{25mm}{20mm}{25mm}{20mm}{12pt}{11mm}{0pt}{10mm}
 
 \usepackage[color]{circus}
 %\usepackage[cntbysection,color]{circus}
@@ -101,7 +102,7 @@ The steps to apply our approach to this case are listed below.
 \section{Notes}
 \begin{itemize}
     \item We rename all identifies with subscript digits to underline ($\_$) symbol. For example, $M_1$ to $M\_1$. That is due to the fact that subscript is not supported in CSP.
-    \item According to Leo's version, for the appropriate typesetting of the expected text in Unicode, the freetype should be given a \LaTeX markup directives and a \LaTeX command. For brevity, this model omits this additional \LaTeX definitions. 
+    \item According to Leo's version, for the appropriate typesetting of the expected text in Unicode, the freetype should be given a \LaTeX\ markup directives and a \LaTeX\ command. For brevity, this model omits this additional \LaTeX\ definitions. 
 \end{itemize}
 %
 %\chapter{Introduction}
@@ -1682,8 +1683,12 @@ For animation purpose, $input$ has been split into seven small channels: $input1
     % pst, pcst
     % expectedp, expectedpc
     % pumpState?, pumpCtrState? 
-%    \t1 StopSignalHis == [~ stops: NUMS; signalhistory: \power InputSignal ~] \\ % rye
-%    \t1 PumpOp == \\ \t2 \Xi QSensor \land \Xi VSensor \land \Xi Valve \land \Xi CValues \land \Xi Failures \land \Xi ExpectedPumpStates \land \Xi InputMsg \land \Xi StopSignalHis \land \Xi EmergenyCond \\ % rye: EquipmentFailures also includes the PumpCtrSystem, so it is not right for SetPumpCtr to update pumpctr etc since it is \Xi before EquipmentFailures. So just include failures
+\begin{zed}
+    \t1 StopSignalHis == [~ stops: NUMS; signalhistory: \power InputSignal ~] \\ % rye
+    \t1 PumpOp == \Xi QSensor \land \Xi VSensor \land \Xi Valve \land \Xi CValues \land \\
+        \t2 \Xi Failures \land \Xi ExpectedPumpStates \land \Xi InputMsg \land \\
+        \t2 \Xi StopSignalHis \land \Xi EmergenyCond \\ % rye: EquipmentFailures also includes the PumpCtrSystem, so it is not right for SetPumpCtr to update pumpctr etc since it is \Xi before EquipmentFailures. So just include failures
+\end{zed}
     %\t1 PumpOp == \\ \t2 \Xi QSensor \land \Xi VSensor \land \Xi Valve \land \Xi CValues \land \Xi EquipmentFailures \land \Xi InputMsg \land \Xi StopSignalHis \\
     %\t1 PumpOp == \\ \t2 \Xi QSensor \land \Xi VSensor \land \Xi Valve \land \Xi CValues \land \Xi EquipmentFailures \\
     %\t1 InitAnalyserState == [~ AnalyserState~' | InitEquipment \land stops' = 0 \land signalhistory' = \emptyset ~] \\
@@ -1745,26 +1750,31 @@ Instead of checking $\lnot RepairsExpected \lor \lnot FailuresExpected$, we chec
 
 $HandleRepair$, as a schema expression, is added to repair equipments.
 \begin{zed}
-    %\t1 HandleRepair == RepairEquipments \land EvalRepairFailureAck \land \Xi CValues \land \Xi Failures \land \Xi InputMsg \land \Xi StopSignalHis \land \Xi Valve \land \Xi ExpectedPumpStates \\
-    \t1 HandleRepair == RepairEquipments \land EvalRepairFailureAck \\
+    \t1 HandleRepair == RepairEquipments \land EvalRepairFailureAck \land \Xi CValues \\
+        \t2 \land \Xi Failures \land \Xi InputMsg \land \Xi StopSignalHis \land \\
+        \t2 \Xi Valve \land \Xi ExpectedPumpStates \\
+    %\t1 HandleRepair == RepairEquipments \land EvalRepairFailureAck \\
     %\t1 AnalyserCycle \circdef startcycle \then input~?msg \then (\lschexpract SetPumpCtr \land PumpOp \rschexpract \circseq \\
     %\t1 AnalyserCycle \circdef startcycle \then input~?signals?pumpState?pumpCtrState?q?v?failureacks?repairs \then (\lschexpract SetPumpCtr \land PumpOp \rschexpract \circseq \\
 \end{zed}
 
-$PumpOp$ is not necessary because the schema expression as action in \Circus\ implies the variables not in the frame are not changed.
+%$PumpOp$ is not necessary because the schema expression as action in \Circus\ implies the variables not in the frame are not changed.
 \begin{circusaction}
     \t1 AnalyserCycle \circdef startcycle \then input1?signals \then input2?pumpState \then \\
         \t2 input3?pumpCtrState \then input4?q \then input5?v \then \\
         \t2 input6?failureacks \then input7?repairs \then \\
-        \t2 (\lschexpract HandleRepair \rschexpract \circseq \lschexpract SetPumpCtr \rschexpract \circseq \\
-%        (\lschexpract HandleRepair \rschexpract \circseq \lschexpract SetPumpCtr \land PumpOp \rschexpract \circseq \\
+%        \t2 (\lschexpract HandleRepair \rschexpract \circseq \lschexpract SetPumpCtr \rschexpract \circseq \\
+        \t2 (\lschexpract HandleRepair \rschexpract \circseq \lschexpract SetPumpCtr \land PumpOp \rschexpract \circseq \\
             \t3 \lschexpract Analyse \rschexpract \circseq\ startexec \then InfoService) \\
     %
 \end{circusaction}
 \begin{zed}
-%    \t1 PumpOp2 == \Xi QSensor \land \Xi VSensor \land \Xi CValues \land \Xi Failures \land \Xi InputMsg \land \Xi StopSignalHis \land \Xi EmergenyCond \\ % rye: EquipmentFailures also includes the PumpCtrSystem, so it is not right for SetPumpCtr to update pumpctr etc since it is \Xi before EquipmentFailures. So just include failures
-%    \t1 SetExpectedPumpState == CalcExpectedPumpState \land SetValveState \land PumpOp2 \\ %rye: add for updating expected pump state
-    \t1 SetExpectedPumpState == CalcExpectedPumpState \land SetValveState \\
+    \t1 PumpOp2 == \Xi QSensor \land \Xi VSensor \land \Xi CValues \land \\
+        \t2 \Xi Failures \land \Xi InputMsg \land \Xi StopSignalHis \land \\
+        \t2 \Xi EmergenyCond \\ % rye: EquipmentFailures also includes the PumpCtrSystem, so it is not right for SetPumpCtr to update pumpctr etc since it is \Xi before EquipmentFailures. So just include failures
+    \t1 SetExpectedPumpState == \\
+        \t2 CalcExpectedPumpState \land SetValveState \land PumpOp2 \\ %rye: add for updating expected pump state
+%    \t1 SetExpectedPumpState == CalcExpectedPumpState \land SetValveState \\
 \end{zed}
 \begin{circusaction}
     %\t1 SetValveStateOp == SetValveState \land \Xi QSensor \land \Xi VSensor \land \Xi CValues \land \Xi Failures \land \Xi PumpCtrSystem \land \Xi InputMsg \land \Xi StopSignalHis \land \Xi ExpectedPumpStates \\
