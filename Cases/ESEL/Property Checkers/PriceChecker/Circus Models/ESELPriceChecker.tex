@@ -22,7 +22,7 @@
             \t2 AOffDisplay \circseq failures.(\{pid \mapsto \{NA\}\}) \then \Skip) \\
         \t1 ACheck \circdef \circvar p: Price; eid: ESID; pid:PID \circspot \\
             \t2 ACheckMap(p, eid, pid) \extchoice ACheckNoMap(p, eid, pid) \\
-	    \t1 \circspot Init \circseq AOffDisplay \circseq (\circmu X \circspot (ACheck) \circseq X) \\
+	    \t1 \circspot \lschexpract Init \rschexpract \circseq AOffDisplay \circseq (\circmu X \circspot (ACheck) \circseq X) \\
 	\circend
 \end{circus}
 
